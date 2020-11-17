@@ -9,6 +9,8 @@ from data.bot.bot_functions import guild_settings, counting_channel
 from data.bot.bot_config import config
 
 
+# TODO: check if user edits message in counting channel
+
 # ---------------------------------Code------------------------------------#
 
 class Counting(commands.Cog):
@@ -51,9 +53,14 @@ class Counting(commands.Cog):
                 return
 
             curnum = await counting_channel(self.client, "get_val", message.guild.id)
-            if int(message.content) != curnum+1:
+            try:
+                if int(message.content) != curnum+1:
+                    await message.delete()
+                    await message.author.send(f"That's not the next number!\nHint: it's `{curnum+1}`!")
+                    return
+            except ValueError:
                 await message.delete()
-                await message.author.send(f"That's not the next number!\nHint: it's `{curnum+1}`!")
+                await message.author.send("That's not a number!")
                 return
 
             lastid = await counting_channel(self.client, "get_id", message.guild.id)

@@ -72,7 +72,10 @@ class Bump(commands.Cog):
 
                             if not skip:
                                 oldMember = message.guild.get_member(int(oldID))
-                                send_msg += f"\n\n{oldMember.mention}, you've lost your top spot!"
+                                try:
+                                    send_msg += f"\n\n{oldMember.mention}, you've lost your top spot!"
+                                except AttributeError:
+                                    print(f"Top spot error, here's the deets:\nOldMember object: {oldMember}\nBumpID: {bumpID}\noldtop: {oldtop}\ntop: {top}\noldid: {oldID}\nbumpID: {bumpID}")
                     else:
                         send_msg += "\n\nYou were also the first to bump the server. Congrats!"
 
