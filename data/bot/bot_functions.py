@@ -169,13 +169,13 @@ async def return_all_faces_formatted(client, ctx):
 
 async def guild_settings(guild_id, ctx=None, setting=None, value=None):
     try:
-        with open(f"./data/{guild_id}/settings.json", "r") as fp:
+        with open(f"./data/{guild_id}/settings.json", 'r') as fp:
             settingsDict = json.load(fp)
     except FileNotFoundError:
         await gen_settings(guild_id)
         if ctx is not None:
             await ctx.send("Generated settings for your guild")
-        with open(f"./data/{guild_id}/settings.json", "r") as fp:
+        with open(f"./data/{guild_id}/settings.json", 'r') as fp:
             settingsDict = json.load(fp)
 
     for val in list(config["DEFAULT_SETTINGS"].keys()):
@@ -354,7 +354,7 @@ async def counting_channel(client, type_, guild_id, val=0, lastbump_id=None, cha
             return newval
 
         elif type_ == "get_id":
-            with open(f"./data/{guild_id}/count_id.txt", "r") as fp:
+            with open(f"./data/{guild_id}/count_id.txt", 'r') as fp:
                 returnval = int(fp.read())
 
         else:
@@ -407,3 +407,16 @@ async def get_id_mention(text):
     if match[0] == "!":
         match = await string_pop(match, 0)
     return int(match)
+
+
+async def determine_prefix(client, ctx, r=None):
+        if r != 'r':
+            try:
+                return [client.custom_prefixes[str(ctx.guild.id)], f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "]
+            except KeyError:
+                return [config['PREFIX'], f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "]
+        else:
+            try:
+                return client.custom_prefixes[str(ctx.guild.id)]
+            except KeyError:
+                return config['PREFIX']

@@ -8,7 +8,7 @@ import shutil
 import discord
 from discord.ext import commands
 from data.bot.bot_config import config
-from data.bot.bot_functions import function_backwords, spacify_function, random_gif, inch_cm, message_data_mod
+from data.bot.bot_functions import function_backwords, spacify_function, random_gif, inch_cm, message_data_mod, determine_prefix
 
 
 # ---------------------------------Code------------------------------------ #
@@ -38,7 +38,7 @@ class Other(commands.Cog):
     async def convert(self, ctx, text=None):
         if text is None:
             await ctx.send(
-                f"Please convert either:\nFeet'inches to CM `{config['PREFIX']}convert 6'2`\nCM to Feet'inches `{config['PREFIX']}convert 188`\nMetres to CM `{config['PREFIX']}convert 1.88`")
+                f"Please convert either:\nFeet'inches to CM `{await determine_prefix(self.client, ctx, 'r')}convert 6'2`\nCM to Feet'inches `{await determine_prefix(self.client, ctx, 'r')}convert 188`\nMetres to CM `{await determine_prefix(self.client, ctx, 'r')}convert 1.88`")
             return
 
         convert = await inch_cm(text)
@@ -84,7 +84,7 @@ class Other(commands.Cog):
             await ctx.send("You can't use this command!")
             return
         if guild_id is None:
-            await ctx.send(f"Please use this command with a guild id!\nExample: `{config['PREFIX']}guildban 753463761704321034`")
+            await ctx.send(f"Please use this command with a guild id!\nExample: `{await determine_prefix(self.client, ctx, 'r')}guildban 753463761704321034`")
             return
         elif re.match(r"[0-9]{18}?", guild_id) is None:
             await ctx.send("That's not a valid guild!")
@@ -117,7 +117,7 @@ class Other(commands.Cog):
 Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
 I like long walks on the beach and watching the sunset :)
 
-If you ever need help, just use the `{config['PREFIX']}help` command, and i'll answer any and all questions you have!
+If you ever need help, just use the `{await determine_prefix(self.client, ctx, 'r')}help` command, and i'll answer any and all questions you have!
 If you've got a more serious problem with me, you can always visit my discord at https://sinelservers.xyz/discord.php where you can ask more in depth questions or report that there's something wrong with me
 You can also make suggestions which you'd like added (although keep in mind my creator is just one person and is busy with school and other life-related things)
 

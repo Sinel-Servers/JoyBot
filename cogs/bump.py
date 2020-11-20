@@ -6,7 +6,7 @@ import json
 import os
 
 from discord.ext import commands
-from data.bot.bot_functions import string_pop, get_top_dict, bump_total_mod, get_id_mention, format_member_pretty
+from data.bot.bot_functions import string_pop, get_top_dict, bump_total_mod, get_id_mention, format_member_pretty, determine_prefix
 from data.bot.bot_config import config
 
 
@@ -23,7 +23,7 @@ class Bump(commands.Cog):
             if len(guildid) != 18:
                 continue
             try:
-                with open(f"./data/{guildid}/bumptotals.json", "r") as fp:
+                with open(f"./data/{guildid}/bumptotals.json", 'r') as fp:
                     client.bumpDict[str(guildid)] = json.load(fp)
                     total_guilds += 1
                     total_people += len(self.client.bumpDict[str(guildid)])
@@ -59,7 +59,7 @@ class Bump(commands.Cog):
                             send_msg += "\nYou also managed to get the top spot! Nice!"
 
                             try:
-                                with open(f"./data/{message.guild.id}/roletop.txt", "r") as fp:
+                                with open(f"./data/{message.guild.id}/roletop.txt", 'r') as fp:
                                     oldID = int(fp.read().replace('\n', ''))
                                 skip = False
 

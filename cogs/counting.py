@@ -5,7 +5,7 @@ import os
 import discord
 from discord.ext import commands
 
-from data.bot.bot_functions import guild_settings, counting_channel
+from data.bot.bot_functions import guild_settings, counting_channel, determine_prefix
 from data.bot.bot_config import config
 
 
@@ -23,7 +23,7 @@ class Counting(commands.Cog):
             if len(guildid) != 18:
                 continue
             try:
-                with open(f"./data/{guildid}/count.txt", "r") as fp:
+                with open(f"./data/{guildid}/count.txt", 'r') as fp:
                     try:
                         amount = int(fp.read())
                     except ValueError:

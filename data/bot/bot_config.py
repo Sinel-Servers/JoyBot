@@ -6,7 +6,10 @@ config = {
 	#--------Important things----------#
 
 	# Discord token to log in
-	"TOKEN": "NTA0MDMwNzAzMjY0OTg5MTk0.W841LA.Am1bOYbxAqIdHX5tdSPijAOIXJc",
+	# False to look for an environment variable
+	"TOKEN": False,
+
+	"ENVVAR": "DISCORD_JOYBOT_TOKEN",
 
 	# The ID of your bot
 	"BOTID": 504030703264989194,

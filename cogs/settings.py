@@ -4,7 +4,7 @@
 import os
 from discord.ext import commands
 from data.bot.bot_functions import guild_settings, get_id_mention, text_pretty_mid_end, gen_settings, \
-                                   format_member_pretty, get_id_channel, counting_channel
+                                   format_member_pretty, get_id_channel, counting_channel, determine_prefix
 from data.bot.bot_config import config
 
 
@@ -116,7 +116,7 @@ class Settings(commands.Cog):
             await ctx.send("Counting channel is set up!")
 
         else:
-            await ctx.send(f"That's not a valid setting, you can use `{config['PREFIX']}listsettings` to get the settings list.")
+            await ctx.send(f"That's not a valid setting, you can use `{await determine_prefix(self.client, ctx, 'r')}listsettings` to get the settings list.")
 
 
 def setup(client):

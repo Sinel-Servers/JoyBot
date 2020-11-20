@@ -33,7 +33,7 @@ import os
 import sys
 import re
 from discord.ext import commands
-from data.bot.bot_functions import return_all_faces_formatted, message_data_mod, gen_settings
+from data.bot.bot_functions import return_all_faces_formatted, message_data_mod, gen_settings, determine_prefix
 from data.bot.bot_config import config
 
 # Enable colors on windows
@@ -96,7 +96,7 @@ del DEFAULTNONE, DEFAULTGIF, DEFAULTCONFIG, DEFAULTFUNCTION, DEFAULTCOG, STRUCTU
 # -----------------------Set up Variables--------------------- #
 
 # Set up the bot object
-client = commands.Bot(command_prefix=config['PREFIX'])
+client = commands.Bot(command_prefix=determine_prefix)
 client.msg_data = {}
 
 # Remove the help command, as we have our own custom one
@@ -116,13 +116,13 @@ async def on_command_error(ctx, error):
         return
     elif "403" in str(error):
         try:
-            await ctx.send(f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\nIf you think you removed some permissions, you can re-invite me by running the `{config['PREFIX']}invite` command.\n(make sure to kick me before you re-invite me!)")
+            await ctx.send(f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\nIf you think you removed some permissions, you can re-invite me by running the `{await determine_prefix(client, ctx, 'r')}invite` command.\n(make sure to kick me before you re-invite me!)")
         except discord.errors.Forbidden:
             pass
         return
 
     elif isinstance(error, commands.errors.MemberNotFound):
-        if ctx.message.content == f"{config['PREFIX']}randomface list":
+        if ctx.message.content == f"{await determine_prefix(client, ctx, 'r')}randomface list":
             try:
                 _ = client.facesDict[str(ctx.guild.id)]
                 del _
@@ -147,13 +147,20 @@ async def on_command_error(ctx, error):
 async def on_guild_join(guild):
     print(f"Joined the guild '{guild.name}'")
     await gen_settings(guild.id)
+    for channel in guild.text_channels:
+        try:
+            await channel.send(f"Hey, thanks for inviting me!\nMy default prefix is `{config['PREFIX']}`, but you can also just mention me (`@JoyBot#7306 `)\n\nIf you'd like, you can also change my prefix by using this command: `{config['PREFIX']}prefix <the prefix you want>`")
+        except discord.errors.Forbidden:
+            pass
+        else:
+            break
 
 
 @client.event
 async def on_message(message):
-    if message.content == f"<@!{config['BOTID']}>":
+    if message.content == f"<@!{config['BOTID']}>" or message.content == f"<@{config['BOTID']}>":
         if message.author.id != config["BOTID"]:
-            await message.channel.send(f"My prefix is `{config['PREFIX']}`!\nType `{config['PREFIX']}help` to get a list of commands!\nType `{config['PREFIX']}info` to get some info about me and my creator!")
+            await message.channel.send(f"My prefix here is `{await determine_prefix(client, message, 'r')}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\nType `{await determine_prefix(client, message, 'r')}help` to get a list of commands!\nType `{await determine_prefix(client, message, 'r')}info` to get some info about me and my creator!")
     await client.process_commands(message)
 
 
@@ -245,7 +252,10 @@ async def reload_error(ctx, error):
 def main():
     print("Logging into discord...")
     try:
-        client.run(config["TOKEN"])
+        if config["TOKEN"]:
+            client.run(config["TOKEN"])
+        else:
+            client.run(os.environ[config["ENVVAR"]])
 
     except discord.errors.LoginFailure:
         print(

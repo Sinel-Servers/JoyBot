@@ -5,7 +5,7 @@ import json
 import os
 
 from discord.ext import commands
-from data.bot.bot_functions import text_pretty_mid_end, guild_settings
+from data.bot.bot_functions import text_pretty_mid_end, guild_settings, determine_prefix
 from data.bot.bot_config import config
 
 
@@ -16,7 +16,7 @@ class Help(commands.Cog):
         self.client = client
         for guildid in os.listdir("./data"):
             try:
-                with open(f"./data/{guildid}/faces.json", "r") as fp:
+                with open(f"./data/{guildid}/faces.json", 'r') as fp:
                     client.facesDict[guildid] = json.load(fp)
             except FileNotFoundError:
                 continue
@@ -66,7 +66,7 @@ class Help(commands.Cog):
                         command = config["CMD_HELP"]["SUPERADMIN"][command]
                         sendstring += f"\t{await text_pretty_mid_end(command_name, command['flavor_text'])}\n"
 
-                sendstring += f"\nYou can run '{config['PREFIX']}help <command>' to get a more in-depth explanation of a command!\nExample: '{config['PREFIX']}help help'\n"
+                sendstring += f"\nYou can run '{await determine_prefix(self.client, ctx, 'r')}help <command>' to get a more in-depth explanation of a command!\nExample: '{await determine_prefix(self.client, ctx, 'r')}help help'\n"
 
             else:
                 if config["CMD_HELP"]["OTHERS"] is not None:
@@ -95,7 +95,7 @@ class Help(commands.Cog):
                     group = "SUPERADMIN"
                 else:
                     await ctx.send(
-                        f"That isn't a valid command, type `{config['PREFIX']}help` to get a list of all the commands!")
+                        f"That isn't a valid command, type `{await determine_prefix(self.client, ctx, 'r')}help` to get a list of all the commands!")
                     return
 
                 if group != "OTHERS":
@@ -111,12 +111,12 @@ class Help(commands.Cog):
                 else:
                     cmd_format = ""
 
-                sendstring += f"\tUsage: {config['PREFIX']}{req_cmd}  {cmd_format}\n"
+                sendstring += f"\tUsage: {await determine_prefix(self.client, ctx, 'r')}{req_cmd}  {cmd_format}\n"
 
                 if command['aliases']:
                     aliaseslist = ""
                     for alias in command['aliases']:
-                        aliaseslist += f"'{config['PREFIX']}{alias}', "
+                        aliaseslist += f"'{await determine_prefix(self.client, ctx, 'r')}{alias}', "
                     sendstring += f"\tAliases: {aliaseslist[:-2]}\n"
 
                 if command['extra_info']:

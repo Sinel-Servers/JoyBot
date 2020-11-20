@@ -4,7 +4,7 @@
 import discord
 from discord.ext import commands
 from data.bot.bot_config import config
-from data.bot.bot_functions import function_backwords, spacify_function, random_gif, inch_cm
+from data.bot.bot_functions import function_backwords, spacify_function, random_gif, inch_cm, determine_prefix
 
 
 # ---------------------------------Code------------------------------------ #

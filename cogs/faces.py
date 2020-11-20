@@ -9,7 +9,7 @@ import random
 from discord.ext import commands
 
 from data.bot.bot_config import config
-from data.bot.bot_functions import format_member_pretty, guild_settings
+from data.bot.bot_functions import format_member_pretty, guild_settings, determine_prefix
 
 
 # ---------------------------------Code------------------------------------#
@@ -25,7 +25,7 @@ class Faces(commands.Cog):
             if len(guildid) != 18:
                 continue
             try:
-                with open(f"./data/{guildid}/faces.json", "r") as fp:
+                with open(f"./data/{guildid}/faces.json", 'r') as fp:
                     client.facesDict[str(guildid)] = json.load(fp)
                     total_guilds += 1
                     total_people += len(self.client.facesDict[str(guildid)])
@@ -44,7 +44,7 @@ class Faces(commands.Cog):
             await ctx.send("This guild doesn't have any faces, ask an admin to add some!")
             return
         if member is None:
-            await ctx.send(f"Please use the proper usage!\nType `{config['PREFIX']}help randomface` if you're stuck!")
+            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.client, ctx, 'r')}help randomface` if you're stuck!")
             return
         try:
             chosen_face_id = random.choice(list(guild_faces[str(member.id)].keys()))
@@ -71,7 +71,7 @@ class Faces(commands.Cog):
             guild_faces = {}
 
         if member is None:
-            await ctx.send(f"Please use the proper usage!\nType `{config['PREFIX']}help randomface` if you're stuck!")
+            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.client, ctx, 'r')}help randomface` if you're stuck!")
             return
 
         if not ctx.message.attachments:
