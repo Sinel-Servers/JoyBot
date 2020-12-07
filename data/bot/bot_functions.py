@@ -413,10 +413,10 @@ async def determine_prefix(client, ctx, r=None):
         if r != 'r':
             try:
                 return [client.custom_prefixes[str(ctx.guild.id)], f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "]
-            except KeyError:
+            except (KeyError, AttributeError):
                 return [config['PREFIX'], f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "]
         else:
             try:
                 return client.custom_prefixes[str(ctx.guild.id)]
-            except KeyError:
+            except (KeyError, AttributeError):
                 return config['PREFIX']
