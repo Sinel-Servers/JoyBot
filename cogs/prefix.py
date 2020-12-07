@@ -17,7 +17,7 @@ from data.bot.bot_functions import function_backwords, spacify_function, random_
 class Prefix(commands.Cog):
     def __init__(self, client):
         self.client = client
-        client.custom_prefixes = {"110373943822540800": f"joybot "}
+        client.custom_prefixes = {}
 
 
     @client.command
