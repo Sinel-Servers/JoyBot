@@ -39,7 +39,7 @@ class Bump(commands.Cog):
         firstbump = False
         if message.author.id == config['DISBOARDID']:
             for embed in message.embeds:
-                if "Bump done" in embed.description:
+                if ":thumbsup:" in embed.description:
                     bumpID = await get_id_mention(embed.description)
 
                     try:
