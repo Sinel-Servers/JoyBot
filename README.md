@@ -1,6 +1,6 @@
 # JoyBot
 ------------
-Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him! I like long walks on the beach and watching the sunset :)
+Hey, I'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him! I like long walks on the beach and watching the sunset :)
 
 Some of my features include:
  - Disboard bump tracking

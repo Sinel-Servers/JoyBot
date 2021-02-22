@@ -1,3 +1,10 @@
+# Custom
+.joybot_main.db
+.joybot_pics.db
+
+
+# Default
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,30 +1,41 @@
-# --------------------------JoyBot - Python Branch------------------------- #
-# ---------------------------------Other----------------------------------- #
+# JoyBot - Discord Bot
+# Copyright (C) 2020 - 2021 Dylan Prins
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.
+# If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+
+# You may contact me at admin@sinelservers.xyz
 
 import re
-import os
-import sys
-import shutil
-import discord
 from discord.ext import commands
-from data.bot.bot_config import config
-from data.bot.bot_functions import function_backwords, spacify_function, random_gif, inch_cm, message_data_mod, determine_prefix
 
+from config import config
+from classes.database.message import Message
+from classes.exceptions import AlreadyBannedError, NoDataError
+from classes.database.guild import Bump, Pictures, Settings, Counting, Ban
+from functions import inch_cm, determine_prefix
 
 # ---------------------------------Code------------------------------------ #
 
 
 class Other(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def backwords(self, ctx, *, text):
-        convert = await function_backwords(text)
-        if convert != "":
-            await ctx.send(f"{ctx.author.mention}, here is your backwords string: {convert}")
-        else:
-            await ctx.send(f"{ctx.author.mention}, please provide something to return backwords!")
+        text = f"{ctx.author.mention}, here's your backwords string: {text[::-1]}" if text != "" else f"{ctx.author.mention}, please provide something to return backwords!"
+        await ctx.send(text)
 
     @commands.command()
     async def reversecaps(self, ctx, *, text=None):
@@ -37,8 +48,9 @@ class Other(commands.Cog):
     @commands.command()
     async def convert(self, ctx, text=None):
         if text is None:
-            await ctx.send(
-                f"Please convert either:\nFeet'inches to CM `{await determine_prefix(self.client, ctx, 'r')}convert 6'2`\nCM to Feet'inches `{await determine_prefix(self.client, ctx, 'r')}convert 188`\nMetres to CM `{await determine_prefix(self.client, ctx, 'r')}convert 1.88`")
+            await ctx.send(f"Please convert either:\nFeet'inches to CM `{await determine_prefix(self.bot, ctx, True)}"
+                           f"convert 6'2`\nCM to Feet'inches `{await determine_prefix(self.bot, ctx, True)}convert 188"
+                           f"`\nMetres to CM `{await determine_prefix(self.bot, ctx, True)}convert 1.88`")
             return
 
         convert = await inch_cm(text)
@@ -49,31 +61,54 @@ class Other(commands.Cog):
 
     @commands.command()
     async def spacify(self, ctx, *, text):
-        spacedText = await spacify_function(text)
-        await ctx.send(f"{ctx.author.mention}, here is your message:\n{spacedText}")
+        text = list(text)
+        text = " ".join(text)
+        await ctx.send(f"{ctx.author.mention}, here is your message:\n{text}")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-        msgmod = await message_data_mod(self.client, "remove", reaction.user_id, reaction.message_id)
+        messagedb = Message(reaction.user_id, reaction.message_id)
+        try:
+            msgmod = messagedb.get()
+        except NoDataError:
+            return
         try:
             if msgmod[0] == "guild ban":
-                if reaction.user_id not in config["SUPERADMINIDS"]:
-                    await message_data_mod(self.client, "add", reaction.user_id, reaction.message_id, ("guild ban", msgmod[0][1]))
-                    return
-
-                ctx_guild = self.client.get_guild(reaction.guild_id)
-                ctx_channel = ctx_guild.get_channel(reaction.channel_id)
+                guild = self.bot.get_guild(reaction.guild_id)
+                channel = guild.get_channel(reaction.channel_id)
+                msg = await channel.fetch_message(msgmod[1])
                 if str(reaction.emoji) == config["CHAR_TICK"]:
-                    msg = await ctx_channel.send("Deleting all data for that guild...")
+                    previous_content = msg.content
+                    await msg.edit(content=f"~~{previous_content}~~\nDeleting all data for that guild...")
+                    Bump(msgmod[2]).reset_guild_total()
+                    Settings(msgmod[2]).reset_settings(False)
+                    Pictures(msgmod[2]).delete_all()
+                    Counting(msgmod[2]).reset()
+
                     try:
-                        shutil.copytree(f"./data/{msgmod[1]}", f"./data/backups/{msgmod[1]}")
-                    except FileExistsError:
-                        shutil.rmtree(f"./data/backups/{msgmod[1]}")
-                        shutil.copytree(f"./data/{msgmod[1]}", f"./data/backups/{msgmod[1]}")
-                    shutil.rmtree(f"./data/{msgmod[1]}")
-                    await msg.edit(content="All data has been deleted, and they have been blacklisted.")
+                        Ban(msgmod[2]).ban()
+                    except AlreadyBannedError:
+                        pass
+                    previous_content = msg.content.split("\n")
+                    previous_content[1] = f"~~{previous_content[1]}"
+                    previous_content = "\n".join(previous_content)
+                    await msg.edit(content=f"{previous_content}~~\nAll data has been deleted, and the guild has been banned!")
+                    await msg.clear_reactions()
+                    messagedb.remove()
+
                 elif str(reaction.emoji) == config["CHAR_CROSS"]:
-                    await ctx_channel.send("Cancelled server deletion")
+                    previous_content = msg.content
+                    await msg.edit(content=f"~~{previous_content}~~\nCancelled server ban")
+                    await msg.clear_reactions()
+                    messagedb.remove()
+
+            elif msgmod == "delete":
+                if str(reaction.emoji) == config["CHAR_CROSS"]:
+                    ctx_guild = self.bot.get_guild(reaction.guild_id)
+                    ctx_channel = ctx_guild.get_channel(reaction.channel_id)
+                    message = await ctx_channel.fetch_message(reaction.message_id)
+                    await message.delete()
+                    message.remove()
 
         except TypeError:
             return
@@ -84,30 +119,35 @@ class Other(commands.Cog):
             await ctx.send("You can't use this command!")
             return
         if guild_id is None:
-            await ctx.send(f"Please use this command with a guild id!\nExample: `{await determine_prefix(self.client, ctx, 'r')}guildban 753463761704321034`")
+            await ctx.send(f"Please use this command with a guild id!\nExample: `{await determine_prefix(self.bot, ctx, True)}guildban 753463761704321034`")
             return
         elif re.match(r"[0-9]{18}?", guild_id) is None:
             await ctx.send("That's not a valid guild!")
             return
-        elif guild_id not in os.listdir("./data"):
+
+        guild_ids = []
+        for guild in self.bot.guilds:
+            guild_ids.append(guild.id)
+
+        if int(guild_id) not in guild_ids:
             await ctx.send("I have no data on that guild!")
             return
-        guild = self.client.get_guild(int(guild_id))
+
+        guild = self.bot.get_guild(int(guild_id))
         if guild is None:
             msg = await ctx.send("Seems this guild was deleted!\nWould you like to remove it's data?")
-            await message_data_mod(self.client, "add", ctx.author.id, msg.id, ("guild ban", guild_id))
+            Message(ctx.author.id, msg.id).add(("guild ban", msg.id, guild_id))
             await msg.add_reaction(config["CHAR_TICK"])
             await msg.add_reaction(config["CHAR_CROSS"])
             return
 
         msg = await ctx.send(f"Are you sure you want to remove all the guild data for `{guild.name}`?")
-        await message_data_mod(self.client, "add", ctx.author.id, msg.id, ("guild ban", guild_id))
+        Message(ctx.author.id, msg.id).add(("guild ban", msg.id, guild_id))
         await msg.add_reaction(config["CHAR_TICK"])
         await msg.add_reaction(config["CHAR_CROSS"])
 
     @commands.command()
     async def invite(self, ctx):
-        # link = f"https://discord.com/api/oauth2/authorize?client_id={config['BOTID']}&permissions={config['PERMINT']}&scope=bot"
         link = "https://sinelservers.xyz/stuff-made/JoyBot/invite.php"
         await ctx.send(f"{ctx.author.mention}, here's an invite link to add JoyBot to your own server:\n{link}")
 
@@ -117,7 +157,7 @@ class Other(commands.Cog):
 Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
 I like long walks on the beach and watching the sunset :)
 
-If you ever need help, just use the `{await determine_prefix(self.client, ctx, 'r')}help` command, and i'll answer any and all questions you have!
+If you ever need help, just use the `{await determine_prefix(self.bot, ctx, True)}help` command, and i'll answer any and all questions you have!
 If you've got a more serious problem with me, you can always visit my discord at https://sinelservers.xyz/discord.php where you can ask more in depth questions or report that there's something wrong with me
 You can also make suggestions which you'd like added (although keep in mind my creator is just one person and is busy with school and other life-related things)
 
@@ -126,6 +166,14 @@ Hope you enjoy using me!
         """
         await ctx.send(blurb)
 
+    @commands.command()
+    async def privacy(self, ctx):
+        blurb = f"""
+Hi, you're probably wondering what data we store on you, and that's okay! Everybody has a right to privacy. Check out our privacy policy here:
+https://sinelserve8rs.xyz/stuff-made/JoyBot/privacy.php
+        """
+        await ctx.send(blurb)
 
-def setup(client):
-    client.add_cog(Other(client))
+
+def setup(bot):
+    bot.add_cog(Other(bot))
