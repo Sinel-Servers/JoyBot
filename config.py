@@ -44,7 +44,7 @@ config = {
     ],
 
     # ID of the error guild | ID of the error channel
-    "ERRORDATA": (775532211763544114, 813486475110776864),  # TODO: change to 777407493495455744 when move to joybot
+    "ERRORDATA": (775532211763544114, 777407493495455744),
 
     #-----Less important things---------#
 

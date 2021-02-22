@@ -66,7 +66,7 @@ def main():
             bot.load_extension(f"cogs.{filename[:-3]}")
 
     print("Logging into discord...")
-    bot.run("NzU3NzkzODQ0MTQxMDk3MDgx.X2lkgw.HOj6ojVRB6XDp9bQXICsvo7KjZA")  # environ[config["TOKENVAR"]])
+    bot.run(environ[config["TOKENVAR"]])
 
 
 if __name__ == '__main__':
