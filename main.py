@@ -50,7 +50,10 @@ bot.remove_command("help")
 
 @bot.event
 async def on_message(message):
-    if Ban(message.guild.id).is_banned():
+    try:
+        if Ban(message.guild.id).is_banned():
+            return
+    except AttributeError:
         return
 
     if Counting(message.guild.id).channel_get_id() == message.channel.id:

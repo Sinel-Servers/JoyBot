@@ -16,7 +16,6 @@
 
 # You may contact me at admin@sinelservers.xyz
 
-import os
 import discord
 from discord.ext import commands
 
