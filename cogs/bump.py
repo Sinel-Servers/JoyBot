@@ -37,7 +37,10 @@ class Bump(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if Ban(message.guild.id).is_banned():
+        try:
+            if Ban(message.guild.id).is_banned():
+                return
+        except AttributeError:
             return
 
         counting = Counting(message.guild.id)

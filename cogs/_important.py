@@ -87,12 +87,13 @@ class _important(commands.Cog):
     #----MENTION HELP------#
     @commands.Cog.listener()
     async def on_message(self, message):
-        if Ban(message.guild.id).is_banned():
-            return
-
-        if message.guild is None:
-            self.bot.dmchannel.send(f"DM from {message.author} ({message.author.id}):\n\n------------------------\n{message.content}\n------------------------\nAttachments: {len(message.attachments) != 0}")
-            return
+        try:
+            if Ban(message.guild.id).is_banned():
+                return
+        except AttributeError:
+            if message.author.id != config["BOTID"]:
+                await self.bot.dmchannel.send(f"DM from {message.author} ({message.author.id}):\n\n------------------------\n{message.content}\n------------------------\nAttachments: {len(message.attachments) != 0}")
+                return
 
         if message.content != f"<@!{config['BOTID']}>" or message.content != f"<@{config['BOTID']}>":
             return

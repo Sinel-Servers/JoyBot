@@ -33,7 +33,10 @@ class Count(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if Ban(message.guild.id).is_banned():
+        try:
+            if Ban(message.guild.id).is_banned():
+                return
+        except AttributeError:
             return
 
         counting = Counting(message.guild.id)
@@ -60,6 +63,7 @@ class Count(commands.Cog):
             try:
                 counting.add(message.author.id)
             except AlreadyCountedError:
+                await message.delete()
                 await message.author.send("You can't count twice in a row!")
                 return
 

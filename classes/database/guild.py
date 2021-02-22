@@ -271,7 +271,7 @@ class Counting(Database):
 
         cur_data = self._lookup_record("counting", f"guild_id = {self.guild_id}")
         if len(cur_data) == 0:
-            return None
+            return
         return cur_data[0][1]
 
     def channel_set(self, channel_id: int):
@@ -280,21 +280,14 @@ class Counting(Database):
         :param channel_id: ID of the counting channel
         :return: Previous counting channel or false
         """
-
         cur_data = self._lookup_record("counting", f"guild_id = {self.guild_id}")
         if len(cur_data) == 0:
-            cur_data = False
+            self._add_record("counting", [("guild_id", self.guild_id),
+                                          ("channel", channel_id), ("count", "0"),
+                                          ("last_counted", "504030703264989194")])
         else:
-            cur_data = cur_data[0][1]
-
-        try:
-            self._update_record("counting", [("channel", channel_id)], f"guild_id = {self.guild_id}")
-        except OperationalError as e:
-            return False, e
-
-        if len(cur_data) != 0:
-            return True, cur_data[0]
-        return True
+            self._update_record("counting", [("channel", channel_id), ("count", "0"),
+                                ("last_counted", "504030703264989194")], f"guild_id = {self.guild_id}")
 
     def add(self, user_id: int, amount: int = 1):
         """ Add to the current count
@@ -311,7 +304,7 @@ class Counting(Database):
             raise AlreadyCountedError
 
         try:
-            self._update_record("counting", [("count", cur_data[0][3]+amount)], f"guild_id = {self.guild_id}")
+            self._update_record("counting", [("count", cur_data[0][3]+amount), ("last_counted", user_id)], f"guild_id = {self.guild_id}")
         except OperationalError as e:
             return False, e
 

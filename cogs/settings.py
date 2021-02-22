@@ -129,7 +129,7 @@ class Settings(commands.Cog):
 
             await channel.send("——————————\nThis channel has been set up as the counting channel! It starts from 0!\nHere, i'll go first:")
             await channel.send("0")
-            Counting(ctx.guild.id).set(0)
+            Counting(ctx.guild.id).channel_set(counting_channel)
             await ctx.send("Counting channel is set up!")
 
         elif setting == "prefix":
