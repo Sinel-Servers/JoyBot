@@ -28,7 +28,7 @@
 
 # ---------------------------------Code------------------------------------ #
 
-from os import listdir, name, system
+from os import listdir, name, system, environ
 from discord import AllowedMentions
 from discord.ext.commands import Bot
 from config import config
@@ -65,7 +65,7 @@ def main():
             bot.load_extension(f"cogs.{filename[:-3]}")
 
     print("Logging into discord...")
-    bot.run(config["TOKENVAR"])  # TODO: switch to bot.run(os.environ[config["TOKENVAR"]]) when moving to joybot
+    bot.run(environ[config["TOKENVAR"]])
 
 
 if __name__ == '__main__':

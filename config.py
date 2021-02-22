@@ -24,7 +24,7 @@ config = {
     #--------Important things----------#
 
     # Environment variable where discord token is
-    "TOKENVAR": "NzU3NzkzODQ0MTQxMDk3MDgx.X2lkgw.y9QEWpKFwdD9PPC0AH0zNT-plAE",
+    "TOKENVAR": "JOYBOT_TOKEN",
 
     # The ID of your bot
     "BOTID": 504030703264989194,
