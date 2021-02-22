@@ -33,7 +33,7 @@ from discord import AllowedMentions
 from discord.ext.commands import Bot
 from config import config
 from functions import determine_prefix
-from classes.database.guild import Counting
+from classes.database.guild import Counting, Ban
 
 # Enable colors on windows
 if name == "nt":
@@ -43,7 +43,6 @@ if name == "nt":
 
 # Set up the bot object
 bot = Bot(command_prefix=determine_prefix, allowed_mentions=AllowedMentions(roles=False, everyone=False))
-bot.msg_data = {}
 
 # Remove the help command, as we have our own custom one
 bot.remove_command("help")
@@ -51,8 +50,10 @@ bot.remove_command("help")
 
 @bot.event
 async def on_message(message):
-    counting = Counting(message.guild.id)
-    if counting.channel_get_id() == message.channel.id:
+    if Ban(message.guild.id).is_banned():
+        return
+
+    if Counting(message.guild.id).channel_get_id() == message.channel.id:
         return
 
     await bot.process_commands(message)
@@ -65,9 +66,8 @@ def main():
             bot.load_extension(f"cogs.{filename[:-3]}")
 
     print("Logging into discord...")
-    bot.run(environ[config["TOKENVAR"]])
+    bot.run("NzU3NzkzODQ0MTQxMDk3MDgx.X2lkgw.HOj6ojVRB6XDp9bQXICsvo7KjZA")  # environ[config["TOKENVAR"]])
 
 
 if __name__ == '__main__':
     main()
-

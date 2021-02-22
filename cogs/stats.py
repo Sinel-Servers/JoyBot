@@ -66,5 +66,5 @@ class DiscordListsPost(commands.Cog):
 
 
 def setup(bot):  # TODO: uncomment when moving to JoyBot
-    pass
     #bot.add_cog(DiscordListsPost(bot))
+    pass

@@ -17,7 +17,7 @@
 # You may contact me at admin@sinelservers.xyz
 
 import re
-from data.bot.bot_functions import string_pop
+from functions import string_pop
 
 
 class get_id:

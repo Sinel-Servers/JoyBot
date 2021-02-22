@@ -120,7 +120,7 @@ class Database:
         :param expression: The expression to use when updating certain things
         :return: Result from the sql code
         """
-        sqlcode = f"UPDATE {tablename} SET"
+        sqlcode = f"UPDATE {tablename} SET "
         for item in record_data:
             sqlcode += f"{item[0]} = {item[1]}, "
         sqlcode = sqlcode[:-2]

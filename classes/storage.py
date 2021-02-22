@@ -16,14 +16,17 @@
 
 # You may contact me at admin@sinelservers.xyz
 
-
-class NoDataError(Exception):
-    pass
+import base64
 
 
-class AlreadyCountedError(Exception):
-    pass
+class Storage:
+    def __init__(self, text: str):
+        self.text = text
 
+    def do_base64(self):
+        self.text = base64.b64encode(bytes(self.text, "utf-8")).decode("utf-8")  # noqa
+        return self.text
 
-class AlreadyBannedError(Exception):
-    pass
+    def un_base64(self):
+        self.text = base64.b64decode(self.text).decode("utf-8")
+        return self.text

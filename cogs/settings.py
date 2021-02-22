@@ -81,26 +81,26 @@ class Settings(commands.Cog):
             await ctx.send(f"Added {user} to the admins list")
             return
 
-        elif setting == "global_randomface":
-            global_randomface = settings.get_setting("global_randomface")
-            if global_randomface == "False":
-                settings.set_setting("global_randomface", "True")
-                await ctx.send("Made randomface get pictures from everyone")
+        elif setting == "global_randompic":
+            global_randompic = settings.get_setting("global_randompic")
+            if global_randompic == "False":
+                settings.set_setting("global_randompic", "True")
+                await ctx.send("Made randompic get pictures from everyone")
                 return
             else:
-                settings.set_setting("global_randomface", "False")
-                await ctx.send("Made randomface get pictures from the specified user")
+                settings.set_setting("global_randompic", "False")
+                await ctx.send("Made randompic get pictures from the specified user")
                 return
 
-        elif setting == "global_addface":
-            global_addface = settings.get_setting("global_addface")
-            if global_addface is "False":
-                settings.set_setting("global_addface", "True")
-                await ctx.send("Made addface usable by anyone")
+        elif setting == "global_addpic":
+            global_addpic = settings.get_setting("global_addpic")
+            if global_addpic == "False":
+                settings.set_setting("global_addpic", "True")
+                await ctx.send("Made addpic usable by anyone")
                 return
             else:
-                settings.set_setting("global_addface", "False")
-                await ctx.send("Made addface admins only")
+                settings.set_setting("global_addpic", "False")
+                await ctx.send("Made addpic admins only")
                 return
 
         elif setting == "counting_channel":

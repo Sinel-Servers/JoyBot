@@ -44,7 +44,7 @@ config = {
     ],
 
     # ID of the error guild | ID of the error channel
-    "ERRORDATA": (775532211763544114, 777407493495455744),
+    "ERRORDATA": (775532211763544114, 813486475110776864),  # TODO: change to 777407493495455744 when move to joybot
 
     #-----Less important things---------#
 
@@ -152,7 +152,7 @@ config = {
             "invite": {"flavor_text": "JoyBot invite link", "format": False, "long_text": "Gives you the invite link, so you can use JoyBot in your own server", "extra_info": False, "aliases": []},
             "bumptotal": {"flavor_text": "Shows your bumptotal", "format": "[member]", "long_text": "Shows you the bumptotal of the guild you're in, either you or the supplied member", "extra_info": False, "aliases": []},
             "topbumptotal": {"flavor_text": "Shows the top bumpers", "format": False, "long_text": "Shows the top ten bumpers of the guild you're in", "extra_info": False, "aliases": []},
-            "randomface": {"flavor_text": "Gets a random face", "format": "<member | 'list'>", "long_text": "Gets a random face from a member of your guild, faces must be added by an admin!", "extra_info": "You can use `list` as an argument to get a list of members who have added a face", "aliases": []},
+            "randompic": {"flavor_text": "Gets a random picture", "format": "<member | 'list'>", "long_text": "Gets a random picture from a member of your guild, pictures must be added by an admin!", "extra_info": "You can use `list` as an argument to get a list of members who have added a picture", "aliases": []},
             "hug": {"flavor_text": "Hug someone!", "format": "<member>", "long_text": "Hug someone, shows a related gif!", "extra_info": False, "aliases": []},
             "kiss": {"flavor_text": "Kiss someone!", "format": "<member>", "long_text": "Kiss someone, shows a related gif!", "extra_info": False, "aliases": []},
             "yesnopoll": {"flavor_text": "Makes a yes/no poll", "format": "<question>", "long_text": "Makes a yes/no poll", "extra_info": False, "aliases": ["yesnovote"]},
@@ -168,8 +168,8 @@ config = {
 
         # Only people with the Administrator permission and people authorized can use
         "ADMIN": {
-            "addface": {"flavor_text": "Adds a face", "format": "<member>", "long_text": "Adds a face to a particular member's faces list (for use with randomface)", "extra_info": False, "aliases": []},
-            "delface": {"flavor_text": "Removes a face", "format": "<member> <faceid>", "long_text": "Removes the face of a particular member", "extra_info": False, "aliases": []}
+            "addpic": {"flavor_text": "Adds a picture", "format": "<member>", "long_text": "Adds a picutre to a particular member's pictures list (for use with randompic)", "extra_info": False, "aliases": []}
+            #"delpic": {"flavor_text": "Removes a picture", "format": "<member> <picid>", "long_text": "Removes the picture of a particular member", "extra_info": False, "aliases": []}
         },
 
         # Only people with the Administrator permission can use
@@ -197,7 +197,7 @@ config = {
 # Default guild settings
 config["DEFAULT_SETTINGS"] = {
     "admins_list": [],
-    "global_randomface": False,
-    "global_addface": False,
+    "global_randompic": False,
+    "global_addpic": False,
     "prefix": config["PREFIX"]
 }

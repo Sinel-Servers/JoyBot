@@ -16,11 +16,8 @@
 
 # You may contact me at admin@sinelservers.xyz
 
-
-import json
-import os
-
 from discord.ext import commands
+
 from classes.database.guild import Settings
 from functions import text_pretty_mid_end, determine_prefix
 from config import config
@@ -31,12 +28,6 @@ from config import config
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        for guildid in os.listdir("./data"):  # TODO: Convert to database
-            try:
-                with open(f"./data/{guildid}/faces.json", 'r') as fp:
-                    bot.facesDict[guildid] = json.load(fp)
-            except FileNotFoundError:
-                continue
 
     # Custom help command
     @commands.command()

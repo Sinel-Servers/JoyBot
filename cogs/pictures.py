@@ -18,8 +18,6 @@
 
 
 import discord
-import json
-import os
 import random
 
 from discord.ext import commands
@@ -28,7 +26,7 @@ from typing import Union
 from config import config
 from classes.database.guild import Settings
 from classes.database.guild import Pictures as Pic
-from functions import determine_prefix
+from functions import determine_prefix, text_pretty_mid_end
 
 
 # ---------------------------------Code------------------------------------#
@@ -38,52 +36,59 @@ class Pictures(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def randomface(self, ctx, member: Union[discord.Member, str] = None):
-        try:
-            guild_faces = self.bot.facesDict[str(ctx.guild.id)]
-        except KeyError:
-            await ctx.send("This guild doesn't have any faces, ask an admin to add some!")
+    async def randompic(self, ctx, member: Union[discord.Member, str] = None):
+        pictures = Pic(ctx.guild.id)
+        if not pictures.list():
+            await ctx.send("This guild doesn't have any pictures, ask an admin to add some!")
             return
 
-        if member is not discord.Member:
+        if member is None:
+            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.bot, ctx, True)}help randompic` if you're stuck!")
+            return
+
+        if type(member) is not discord.Member:
             if member.lower() == "list":
-                msg = await ctx.send("Getting faces list...")
-                pic = Pic(ctx.guild.id)
-                await msg.edit(content=pic.list())
+                msg = await ctx.send("Getting pictures list...")
+                piclist = f"Faces for `{ctx.guild.name}`\n```\n"
+                for discordID in pictures.list():
+                    try:
+                        member = await ctx.guild.fetch_member(discordID)
+                        member = f"{member.name}#{member.discriminator}"
+                    except discord.errors.NotFound:
+                        Pic(ctx.guild.id, discordID).delete_user()
+                        continue
+
+                    piclist += await text_pretty_mid_end(member, str(
+                        len(pictures.list()[discordID])), spacegoal=40, txtp=38)
+                    piclist += "\n"
+
+                piclist += "```"
+                await msg.edit(content=piclist)
                 return
 
             await ctx.send("That's not a valid member!")
             return
 
-        if member is None:
-            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.bot, ctx, True)}help randomface` if you're stuck!")
-            return
         try:
-            chosen_face_id = random.choice(list(guild_faces[str(member.id)].keys()))
-            chosen_face = guild_faces[str(member.id)][chosen_face_id]
+            chosen_pic_url = random.choice(pictures.list()[member.id])
         except KeyError:
-            await ctx.send(f"This person doesn't have any faces!")
+            await ctx.send(f"This person doesn't have any pictures!")
             return
 
-        e = discord.Embed(title=f"Random face from {member}", description=f"Picture ID: `{chosen_face_id}`")
+        e = discord.Embed(title=f"Random picture from {member}")
         e.set_footer(text=f"Requested by {ctx.author} ({ctx.author.id})")
-        e.set_image(url=chosen_face)
+        e.set_image(url=chosen_pic_url)
 
         await ctx.send(embed=e)
 
     @commands.command()
-    async def addface(self, ctx, member: discord.Member = None):
+    async def addpic(self, ctx, member: discord.Member = None):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("adminslist"):
             await ctx.send("You're not an admin!")
             return
 
-        try:
-            guild_faces = self.bot.facesDict[str(ctx.guild.id)]
-        except KeyError:
-            guild_faces = {}
-
         if member is None:
-            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.bot, ctx, True)}help randomface` if you're stuck!")
+            await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.bot, ctx, True)}help addpic` if you're stuck!")
             return
 
         if not ctx.message.attachments:
@@ -110,31 +115,15 @@ class Pictures(commands.Cog):
             return
 
         if member.bot:
-            await ctx.send("Bots don't have faces!")
+            await ctx.send("Bots don't have pictures!")
             return
 
-        if str(member.id) in list(guild_faces.keys()):
-            toadd = len(guild_faces[str(member.id)]) + 1
-            guild_faces[str(member.id)][str(toadd)] = file.url
-            await ctx.send(f"Added `{member}`'s picture number `{toadd}`!")
-
-        else:
-            guild_faces[str(member.id)] = {}
-            guild_faces[str(member.id)]["1"] = file.url
-            await ctx.send(f"Added `{member}`'s first picture!")
-
-        self.bot.facesDict[str(ctx.guild.id)] = guild_faces
-        try:
-            with open(f"./data/{ctx.guild.id}/faces.json", "w") as fp:
-                json.dump(self.bot.facesDict[str(ctx.guild.id)], fp)
-        except FileNotFoundError:
-            os.mkdir(f"./data/{ctx.guild.id}/")
-            with open(f"./data/{ctx.guild.id}/faces.json", "w") as fp:
-                json.dump(self.bot.facesDict[str(ctx.guild.id)], fp)
+        Pic(ctx.guild.id, ctx.author.id).add_picture(valid_url)
+        await ctx.send("Added picture successfully!")
 
     @commands.command()
-    async def delface(self, ctx):
-        await ctx.send("Hi, unfortunately due to code corruption this command is gone! The team behind this are working hard to build it all from scratch, but for now you can join the support server (`.info`), and have someone remove any faces manually.\n\nThanks for the understanding!")
+    async def delpic(self, ctx):
+        await ctx.send(f"Hi, unfortunately due to code corruption this command is gone! The team behind this are working hard to build it all from scratch, but for now you can join the support server (`{await determine_prefix(self.bot, ctx, True)}info`), and have someone remove any pictures manually.\n\nThanks for the understanding!")
 
 
 def setup(bot):

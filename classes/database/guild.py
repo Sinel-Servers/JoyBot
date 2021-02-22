@@ -19,11 +19,12 @@
 import json
 from ast import literal_eval
 from config import config
-from sqlite3 import OperationalError
+from sqlite3 import OperationalError, IntegrityError
 
-from __init__ import Database
-from functions import sort_dict
-from classes.exceptions import AlreadyCountedError, NoDataError, DataDoesntExistError
+import functions
+from classes.database import Database
+from classes.storage import Storage
+from classes.exceptions import AlreadyCountedError, AlreadyBannedError, NoDataError
 
 
 class Bump(Database):
@@ -37,21 +38,21 @@ class Bump(Database):
     def _loadbumps(self):
         """ Update/load all the bump data """
         if not self._table_exists("bump"):
-            self._make_table("bump", [("guild_id", "INTEGER PRIMARY KEY"), ("json", "TEXT")])
+            self._make_table("bump", [("guild_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT")])
 
         lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
 
         if not lookup:
-            self._add_record("bump", [("guild_id", self.guild_id), ("json", "{}")])
-            lookup = "{}"
+            self._add_record("bump", [("guild_id", self.guild_id), ("base64", "'e30='")])
+            lookup = "e30="
         else:
             lookup = lookup[0][1]
 
-        return json.loads(lookup)
+        return json.loads(Storage(lookup).un_base64())
 
     def _commit(self):
         """ Commits a change to the database """
-        self._update_record("bump", [("json", json.dumps(self.bumpDict))], f"guild_id = {self.guild_id}")
+        self._update_record("bump", [("base64", functions.quotify(Storage(json.dumps(self.bumpDict)).do_base64()))], f"guild_id = {self.guild_id}")
 
     def get_top(self, num: int = 1, raw: bool = False):
         """ Gets the top {num} entries.
@@ -60,11 +61,11 @@ class Bump(Database):
         :param raw: Whether to return just the top ID or the data too.
         :return: A list of tuples, if raw is off. Else a string of the top id
         """
-        top = await sort_dict(self.bumpDict, num)
+        top = functions.sort_dict(self.bumpDict, num)
         if top == {}:
             raise NoDataError
         if raw is True:
-            return top[0]
+            return top[0]  # noqa
         return top
 
     def get_total(self):
@@ -125,17 +126,21 @@ class Settings(Database):
     def _loadsettings(self):
         """ Update/load all the settings """
         if not self._table_exists("settings"):
-            self._make_table("settings", [("guild_id", "INTEGER PRIMARY KEY"), ("json", "TEXT")])
+            self._make_table("settings", [("guild_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT")])
 
         lookup = self._lookup_record("settings", f"guild_id = {self.guild_id}")
 
         if not lookup:
-            self._add_record("settings", [("guild_id", self.guild_id), ("json", str(config["DEFAULT_SETTINGS"]))])
-            lookup = config["DEFAULT_SETTINGS"]
+            self._add_record("settings", [("guild_id", self.guild_id), ("base64", functions.quotify(Storage(json.dumps(config["DEFAULT_SETTINGS"])).do_base64()))])
+            lookup = Storage(json.dumps(config["DEFAULT_SETTINGS"])).do_base64()
         else:
             lookup = lookup[0][1]
 
-        return lookup
+        return json.loads(Storage(lookup).un_base64())
+
+    def _commit(self):
+        """ Commits a change to the database """
+        self._update_record("settings", [("base64", functions.quotify(Storage(json.dumps(self.settings)).do_base64()))], f"guild_id = {self.guild_id}")
 
     def get_setting(self, setting: str):
         """ Gets a certain setting
@@ -143,14 +148,14 @@ class Settings(Database):
         :param setting: The setting to get the value of
         :return: The setting's value
         """
-        return self._lookup_record("settings", f"guild_id = {self.guild_id}")[0][setting]
+        return self.settings[setting]
 
     def get_all_settings(self):
         """ Gets all settings
 
         :return: The setting's value
         """
-        return self._lookup_record("settings", f"guild_id = {self.guild_id}")[0]
+        return self.settings
 
     def set_setting(self, setting: str, value: str):
         """ Sets a settings' value
@@ -158,7 +163,8 @@ class Settings(Database):
         :param setting: The setting to set the value of
         :param value: The value to set to the setting
         """
-        self._update_record("settings", [(setting, value)], f"guild_id = {self.guild_id}")
+        self.settings[setting] = value
+        self._commit()
 
     def reset_settings(self, regen=True):
         """ Reset the settings for a guild
@@ -175,37 +181,40 @@ class Pictures(Database):
     def __init__(self, guild_id: int, user_id: int = None):
         super().__init__("joybot_pics")
         self.guild_id = guild_id
+        self.guild_pictures = self._loadpics("guild")
         if user_id is not None:
             self.user_id = user_id
             self.user_pictures = self._loadpics("user")
-            self.guild_pictures = self._loadpics("guild")
 
     def _loadpics(self, mode: str = "user"):
         """ Update/load all the pictures """
-        if not self._table_exists(str(self.guild_id)):
-            self._make_table(str(self.guild_id), [("user_id", "INTEGER PRIMARY KEY"), ("list", "TEXT")])
+        if not self._table_exists("g_" + str(self.guild_id)):
+            self._make_table("g_" + str(self.guild_id), [("user_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT")])
 
         if mode == "user":
             if self.user_id is not None:
-                lookup = self._lookup_record(str(self.guild_id), f"user_id = {self.user_id}")
+                lookup = self._lookup_record("g_" + str(self.guild_id), f"user_id = {self.user_id}")
 
                 if not lookup:
-                    self._add_record(str(self.guild_id), [("user_id", self.user_id), ("list", "[]")])
-                    lookup = "[]"
+                    self._add_record("g_" + str(self.guild_id), [("user_id", self.user_id), ("base64", "'W10='")])
+                    lookup = "W10="
                 else:
                     lookup = lookup[0][1]
 
-                return literal_eval(lookup)
+                return literal_eval(Storage(lookup).un_base64())
 
         elif mode == "guild":
-            lookup = self._lookup_record(str(self.guild_id))[0]
+            lookup = self._lookup_record("g_" + str(self.guild_id))
             all_user_pictures = {}
             for user in lookup:
-                all_user_pictures[user[0]] = user[1]
+                print(user)
+                all_user_pictures[user[0]] = literal_eval(Storage(user[1]).un_base64())
+
+            return all_user_pictures
 
     def _commit(self):
         """ Commit all the pictures to the databse """
-        self._update_record(str(self.guild_id), [("list", str(self.user_pictures))], f"user_id = {self.user_id}")
+        self._update_record("g_" + str(self.guild_id), [("base64", functions.quotify(Storage(str(self.user_pictures)).do_base64()))], f"user_id = {self.user_id}")
 
     def add_picture(self, picture_link: str):
         """ Add a picture to a user
@@ -223,7 +232,7 @@ class Pictures(Database):
         try:
             self.user_pictures.remove(picture_link)
         except ValueError:
-            raise DataDoesntExistError
+            raise NoDataError
 
         self._commit()
 
@@ -234,9 +243,15 @@ class Pictures(Database):
         """
         return self.guild_pictures
 
+    def delete_user(self):
+        """ Remove a user's pictures """
+        self.user_pictures = []
+        del self.guild_pictures[str(self.user_id)]
+        self._commit()
+
     def delete_all(self):
         """ Remove all pictures in a guild """
-        self._delete_table(str(self.guild_id))
+        self._delete_table("g_" + str(self.guild_id))
 
 
 class Counting(Database):
@@ -371,11 +386,17 @@ class Ban(Database):
 
     def is_banned(self):
         """ Checks if a guild is banned or not """
-        return self._lookup_record("guild_bans", f"guild_id = {self.guild_id}")[0] != 0
+        rec = self._lookup_record("guild_bans", f"guild_id = {self.guild_id}")
+        if rec:
+            return rec[0] != 0
+        return False
 
     def ban(self):
         """ Bans a guild """
-        self._add_record("guild_bans", [("guild_id", self.guild_id)])
+        try:
+            self._add_record("guild_bans", [("guild_id", self.guild_id)])
+        except IntegrityError:
+            raise AlreadyBannedError
 
     def unban(self):
         """ Unbans a guild """

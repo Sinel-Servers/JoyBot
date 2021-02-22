@@ -20,11 +20,10 @@ import re
 from discord.ext import commands
 
 from config import config
-from classes.exceptions import NoDataError
 from classes.database.message import Message
+from classes.exceptions import AlreadyBannedError, NoDataError
 from classes.database.guild import Bump, Pictures, Settings, Counting, Ban
 from functions import inch_cm, determine_prefix
-
 
 # ---------------------------------Code------------------------------------ #
 
@@ -68,29 +67,42 @@ class Other(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction):
-        message = Message(reaction.user_id, reaction.message_id)
+        messagedb = Message(reaction.user_id, reaction.message_id)
         try:
-            msgmod = message.get()
+            msgmod = messagedb.get()
         except NoDataError:
             return
         try:
             if msgmod[0] == "guild ban":
+                guild = self.bot.get_guild(reaction.guild_id)
+                channel = guild.get_channel(reaction.channel_id)
+                msg = await channel.fetch_message(msgmod[1])
                 if str(reaction.emoji) == config["CHAR_TICK"]:
-                    await msgmod[1].edit(content="Deleting all data for that guild...")
+                    previous_content = msg.content
+                    await msg.edit(content=f"~~{previous_content}~~\nDeleting all data for that guild...")
                     Bump(msgmod[2]).reset_guild_total()
                     Settings(msgmod[2]).reset_settings(False)
                     Pictures(msgmod[2]).delete_all()
                     Counting(msgmod[2]).reset()
 
-                    Ban(msgmod[2]).ban()
-                    await msgmod[1].edit(content="All data has been deleted, and the guild has been banned!")
-                    message.remove()
+                    try:
+                        Ban(msgmod[2]).ban()
+                    except AlreadyBannedError:
+                        pass
+                    previous_content = msg.content.split("\n")
+                    previous_content[1] = f"~~{previous_content[1]}"
+                    previous_content = "\n".join(previous_content)
+                    await msg.edit(content=f"{previous_content}~~\nAll data has been deleted, and the guild has been banned!")
+                    await msg.clear_reactions()
+                    messagedb.remove()
 
                 elif str(reaction.emoji) == config["CHAR_CROSS"]:
-                    await msgmod[1].edit(content="Cancelled server ban")
-                    message.remove()
+                    previous_content = msg.content
+                    await msg.edit(content=f"~~{previous_content}~~\nCancelled server ban")
+                    await msg.clear_reactions()
+                    messagedb.remove()
 
-            elif msgmod[0] == "delete":
+            elif msgmod == "delete":
                 if str(reaction.emoji) == config["CHAR_CROSS"]:
                     ctx_guild = self.bot.get_guild(reaction.guild_id)
                     ctx_channel = ctx_guild.get_channel(reaction.channel_id)
@@ -117,20 +129,20 @@ class Other(commands.Cog):
         for guild in self.bot.guilds:
             guild_ids.append(guild.id)
 
-        if guild_id not in guild_ids:
+        if int(guild_id) not in guild_ids:
             await ctx.send("I have no data on that guild!")
             return
 
         guild = self.bot.get_guild(int(guild_id))
         if guild is None:
             msg = await ctx.send("Seems this guild was deleted!\nWould you like to remove it's data?")
-            Message(ctx.author.id, msg.id).add(("guild ban", msg, guild_id))
+            Message(ctx.author.id, msg.id).add(("guild ban", msg.id, guild_id))
             await msg.add_reaction(config["CHAR_TICK"])
             await msg.add_reaction(config["CHAR_CROSS"])
             return
 
         msg = await ctx.send(f"Are you sure you want to remove all the guild data for `{guild.name}`?")
-        Message(ctx.author.id, msg.id).add(("guild ban", msg, guild_id))
+        Message(ctx.author.id, msg.id).add(("guild ban", msg.id, guild_id))
         await msg.add_reaction(config["CHAR_TICK"])
         await msg.add_reaction(config["CHAR_CROSS"])
 

@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands
 
 from classes.exceptions import AlreadyCountedError
-from classes.database.guild import Counting
+from classes.database.guild import Counting, Ban
 
 
 # ---------------------------------Code------------------------------------#
@@ -33,6 +33,9 @@ class Count(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if Ban(message.guild.id).is_banned():
+            return
+
         counting = Counting(message.guild.id)
         if message.guild is None or message.channel.id != counting.channel_get_id():
             return

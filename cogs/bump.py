@@ -23,8 +23,7 @@ from discord.ext import commands
 
 from functions import string_pop, determine_prefix
 from classes.exceptions import NoDataError
-from classes.database.guild import Counting
-from classes.database.guild import Settings
+from classes.database.guild import Settings, Counting, Ban
 from classes.database.guild import Bump as Bmp
 from classes.get_id import get_id
 from config import config
@@ -38,6 +37,9 @@ class Bump(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if Ban(message.guild.id).is_banned():
+            return
+
         counting = Counting(message.guild.id)
         if counting.channel_get_id() == message.channel.id:
             return
@@ -93,7 +95,10 @@ class Bump(commands.Cog):
     async def topbumptotal(self, ctx):
         bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
-            topbumps = bump.get_top(10)
+            topbumps = await bump.get_top(10)
+            if not topbumps:
+                raise NoDataError
+
         except NoDataError:
             await ctx.send(content=f"{ctx.author.mention}, looks like nobody has bumped disboard yet")
             return
@@ -119,7 +124,7 @@ class Bump(commands.Cog):
             content=f"{ctx.author.mention}, here are the top 10 total times bumped:\n```{printstring}```")
 
     @commands.command()
-    async def changebumptotal(self, ctx, person: discord.Member = None, amount=None):
+    async def changebumptotal(self, ctx, person: discord.Member = None, amount: Union[int, str] = None):
         if ctx.author.id not in config["SUPERADMINIDS"]:
             await ctx.send(f"{ctx.author.mention}, you can't use this command!")
             return
@@ -129,8 +134,15 @@ class Bump(commands.Cog):
             return
 
         if amount is None:
-            await ctx.send(f"{ctx.author.mention}, Please supply an amount to change by!")
+            await ctx.send(f"{ctx.author.mention}, Please supply a numeric amount to change by!")
             return
+
+        if not str(amount).isnumeric():
+            if str(amount)[0] == "-":
+                test_amount = await string_pop(str(amount), 0)
+                if not test_amount.isnumeric():
+                    await ctx.send(f"{ctx.author.mention}, Please supply a ***numeric*** amount to change by!")
+                    return
 
         if person.id == ctx.author.id:
             person_name = "your"
@@ -141,18 +153,12 @@ class Bump(commands.Cog):
 
         bump = Bmp(ctx.guild.id, person_id)
         if str(amount)[0] == "-":
-            amount = await string_pop(amount, 0)
-            if amount.isnumeric():
-                bump.remove_total(amount)
-                await ctx.send(f"Changed {person_name} bump total by -{amount}")
-            else:
-                await ctx.send(f"{ctx.author.mention}, Please give a valid amount!")
+            amount = await string_pop(str(amount), 0)
+            bump.remove_total(int(amount))
+            await ctx.send(f"Changed {person_name} bump total by -{amount}")
         else:
-            if amount.isnumeric():
-                bump.add_total(amount)
-                await ctx.send(f"Changed {person_name} bump total by {amount}")
-            else:
-                await ctx.send(f"{ctx.author.mention}, Please give a valid amount!")
+            bump.add_total(int(amount))
+            await ctx.send(f"Changed {person_name} bump total by {amount}")
 
     @commands.command()
     async def resetbumptotal(self, ctx, person: Union[discord.Member, str]):

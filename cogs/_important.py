@@ -18,9 +18,8 @@
 
 import discord
 from discord.ext import commands
-from functions import return_all_faces_formatted, determine_prefix
-from classes.database.guild import Counting
-from classes.database.guild import Settings
+from functions import determine_prefix
+from classes.database.guild import Counting, Settings, Ban
 from config import config
 
 
@@ -88,6 +87,13 @@ class _important(commands.Cog):
     #----MENTION HELP------#
     @commands.Cog.listener()
     async def on_message(self, message):
+        if Ban(message.guild.id).is_banned():
+            return
+
+        if message.guild is None:
+            self.bot.dmchannel.send(f"DM from {message.author} ({message.author.id}):\n\n------------------------\n{message.content}\n------------------------\nAttachments: {len(message.attachments) != 0}")
+            return
+
         if message.content != f"<@!{config['BOTID']}>" or message.content != f"<@{config['BOTID']}>":
             return
         if message.author.id == config["BOTID"]:
@@ -96,9 +102,9 @@ class _important(commands.Cog):
         if counting.channel_get_id() == message.channel.id:
             return
 
-        await message.channel.send(f"My prefix here is `{await determine_prefix(self.bot, message, 'r')}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\n"
-                                   f"Type `{await determine_prefix(self.bot, message, 'r')}help` to get a list of commands!\nType"
-                                   f"`{await determine_prefix(self.bot, message, 'r')}info` to get some info about me and my creator!")
+        await message.channel.send(f"My prefix here is `{await determine_prefix(self.bot, message, True)}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\n"
+                                   f"Type `{await determine_prefix(self.bot, message, True)}help` to get a list of commands!\nType"
+                                   f"`{await determine_prefix(self.bot, message, True)}info` to get some info about me and my creator!")
 
     #-------------ON ERROR-----------#
     @commands.Cog.listener()
@@ -113,7 +119,7 @@ class _important(commands.Cog):
                 await ctx.send(  # TODO: Figure out which permissions are missing
                     f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\n"
                     f"If you think you removed some permissions, you can re-invite me by running"
-                    f"the `{await determine_prefix(self.bot, ctx, 'r')}invite` command.\n(make sure to kick me before you re-invite me!)")
+                    f"the `{await determine_prefix(self.bot, ctx, True)}invite` command.\n(make sure to kick me before you re-invite me!)")
             except discord.errors.Forbidden:
                 pass
             return
@@ -140,7 +146,7 @@ class _important(commands.Cog):
             except discord.errors.Forbidden:
                 pass
             else:
-                breakp
+                break
 
     #----------ON BOT READY---------#
     @commands.Cog.listener()
@@ -151,7 +157,9 @@ class _important(commands.Cog):
         print(f"Logged in as the bot ({self.bot.user})!")
 
         errguild = self.bot.get_guild(config["ERRORDATA"][0])
-        self.bot.errchannel = errguild.get_channel(config["ERRORDATA"][1])
+        if errguild is not None:
+            self.bot.errchannel = errguild.get_channel(config["ERRORDATA"][1])
+            self.bot.dmchannel = errguild.get_channel(813405943689379872)
         del errguild
 
 

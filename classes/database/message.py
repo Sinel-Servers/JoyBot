@@ -19,8 +19,10 @@
 import json
 from time import time
 
-from classes.exceptions import DataDoesntExistError
+from classes.exceptions import NoDataError
 from classes.database import Database
+from classes.database.guild import Storage
+from functions import quotify
 
 
 class Message(Database):
@@ -36,21 +38,21 @@ class Message(Database):
     def _loadmsgs(self):
         """ Update/load all the message data """
         if not self._table_exists("message"):
-            self._make_table("message", [("time", "INTEGER PRIMARY KEY"), ("user_id", "INTEGER"), ("dict", "TEXT")])
+            self._make_table("message", [("time", "INTEGER PRIMARY KEY"), ("user_id", "INTEGER"), ("base64", "TEXT")])
 
         lookup = self._lookup_record("message", f"user_id = {self.user_id}")
 
         if not lookup:
-            self._add_record("message", [("time", str(int(time()))), ("user_id", self.user_id), ("dict", "{}")])
-            lookup = "{}"
+            self._add_record("message", [("time", str(int(time()))), ("user_id", self.user_id), ("base64", "'e30='")])
+            lookup = "e30="
         else:
-            lookup = lookup[0][1]
+            lookup = lookup[0][-1]
 
-        return json.loads(lookup)
+        return json.loads(Storage(lookup).un_base64())
 
     def _commit(self):
         """ Commit all the message data to the databse """
-        self._update_record("message", [("time", str(int(time()))), ("dict", json.dumps(self.msgdata))], f"user_id = {self.user_id}")
+        self._update_record("message", [("time", str(int(time()))), ("base64", quotify(Storage(json.dumps(self.msgdata)).do_base64()))], f"user_id = {self.user_id}")
 
     def add(self, message_data):
         """ Add message data to a user
@@ -65,7 +67,10 @@ class Message(Database):
 
         :return: The message data
         """
-        return self.msgdata[str(self.msg_id)]
+        try:
+            return self.msgdata[str(self.msg_id)]
+        except KeyError:
+            raise NoDataError
 
     def remove(self):
         """ Remove message data from a user
@@ -74,9 +79,9 @@ class Message(Database):
         """
         try:
             msgdata = self.msgdata[str(self.msg_id)]
-            self.msgdata.remove(str(self.msg_id))
+            self.msgdata.pop(str(self.msg_id))
         except ValueError:
-            raise DataDoesntExistError
+            raise NoDataError
 
         self._commit()
         return msgdata

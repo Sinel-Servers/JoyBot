@@ -21,11 +21,14 @@ from decimal import Decimal
 from operator import itemgetter
 import discord
 
-from classes.database.guild import Settings
+from classes.database.guild import Settings, Pictures
 from config import config
 
 
 # --------------------------------Functions--------------------------------#
+
+def quotify(text):
+    return "'" + text + "'"
 
 
 async def inch_cm(convert):
@@ -77,7 +80,7 @@ async def inch_cm(convert):
         return str(feet) + "'" + str(round(inches))
 
 
-async def string_pop(string, topop):
+async def string_pop(string: str, topop: int):
     string = list(string)
     string.pop(topop)
     return "".join(string)
@@ -136,21 +139,6 @@ async def sort_dict(dictionary, num=10000000000000000, return_type="full"):
 
     else:
         raise TypeError
-
-
-async def return_all_faces_formatted(bot, ctx):
-    returnString = f"Faces for `{ctx.guild.name}`\n```\n"
-    for discordID in list(bot.facesDict[str(ctx.guild.id)].keys()):
-        try:
-            member = await ctx.guild.fetch_member(int(discordID))
-        except discord.errors.NotFound:
-            del bot.facesDict[str(ctx.guild.id)][discordID]
-            continue
-        returnString += await text_pretty_mid_end(member, str(
-            len(list(bot.facesDict[str(ctx.guild.id)][str(discordID)].keys()))), spacegoal=40, txtp=38)
-        returnString += "\n"
-
-    return f"{returnString}```"
 
 
 async def determine_prefix(bot, ctx, raw: bool = False):
