@@ -1,23 +1,40 @@
-# --------------------------JoyBot - Python Branch-------------------------#
-# ----------------------------------Help-----------------------------------#
+# JoyBot - Discord Bot
+# Copyright (C) 2020 - 2021 Dylan Prins
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.
+# If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+
+# You may contact me at admin@sinelservers.xyz
+
 
 import json
 import os
 
 from discord.ext import commands
-from data.bot.bot_functions import text_pretty_mid_end, guild_settings
-from data.bot.bot_config import config
+from classes.database.guild import Settings
+from functions import text_pretty_mid_end, determine_prefix
+from config import config
 
 
 # ---------------------------------Code------------------------------------#
 
 class Help(commands.Cog):
-    def __init__(self, client):
-        self.client = client
-        for guildid in os.listdir("./data"):
+    def __init__(self, bot):
+        self.bot = bot
+        for guildid in os.listdir("./data"):  # TODO: Convert to database
             try:
-                with open(f"./data/{guildid}/faces.json", "r") as fp:
-                    client.facesDict[guildid] = json.load(fp)
+                with open(f"./data/{guildid}/faces.json", 'r') as fp:
+                    bot.facesDict[guildid] = json.load(fp)
             except FileNotFoundError:
                 continue
 
@@ -44,7 +61,7 @@ class Help(commands.Cog):
                             sendstring += f"\t{await text_pretty_mid_end(command_name, command['flavor_text'])}\n"
 
                 # Add the administrator only commands
-                if ctx.author.guild_permissions.administrator or ctx.author.id in config["SUPERADMINIDS"] or ctx.author.id in await guild_settings(ctx.guild.id, "adminslist"):
+                if ctx.author.guild_permissions.administrator or ctx.author.id in config["SUPERADMINIDS"] or ctx.author.id in Settings(ctx.guild.id).get_setting("adminslist"):
                     sendstring += "\nAdmins:\n"
                     for command in config["CMD_HELP"]["ADMIN"]:
                         command_name = command
@@ -66,7 +83,7 @@ class Help(commands.Cog):
                         command = config["CMD_HELP"]["SUPERADMIN"][command]
                         sendstring += f"\t{await text_pretty_mid_end(command_name, command['flavor_text'])}\n"
 
-                sendstring += f"\nYou can run '{config['PREFIX']}help <command>' to get a more in-depth explanation of a command!\nExample: '{config['PREFIX']}help help'\n"
+                sendstring += f"\nYou can run '{await determine_prefix(self.bot, ctx, True)}help <command>' to get a more in-depth explanation of a command!\nExample: '{await determine_prefix(self.bot, ctx, True)}help help'\n"
 
             else:
                 if config["CMD_HELP"]["OTHERS"] is not None:
@@ -95,7 +112,7 @@ class Help(commands.Cog):
                     group = "SUPERADMIN"
                 else:
                     await ctx.send(
-                        f"That isn't a valid command, type `{config['PREFIX']}help` to get a list of all the commands!")
+                        f"That isn't a valid command, type `{await determine_prefix(self.bot, ctx, True)}help` to get a list of all the commands!")
                     return
 
                 if group != "OTHERS":
@@ -111,12 +128,12 @@ class Help(commands.Cog):
                 else:
                     cmd_format = ""
 
-                sendstring += f"\tUsage: {config['PREFIX']}{req_cmd}  {cmd_format}\n"
+                sendstring += f"\tUsage: {await determine_prefix(self.bot, ctx, True)}{req_cmd}  {cmd_format}\n"
 
                 if command['aliases']:
                     aliaseslist = ""
                     for alias in command['aliases']:
-                        aliaseslist += f"'{config['PREFIX']}{alias}', "
+                        aliaseslist += f"'{await determine_prefix(self.bot, ctx, True)}{alias}', "
                     sendstring += f"\tAliases: {aliaseslist[:-2]}\n"
 
                 if command['extra_info']:
@@ -129,5 +146,5 @@ class Help(commands.Cog):
         await ctx.send(f"{sendstring[:-1]}```")
 
 
-def setup(client):
-    client.add_cog(Help(client))
+def setup(bot):
+    bot.add_cog(Help(bot))

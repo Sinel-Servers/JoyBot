@@ -1,81 +1,69 @@
-# --------------------------JoyBot - Python Branch------------------------- #
-# ---------------------------------Bump------------------------------------ #
+# JoyBot - Discord Bot
+# Copyright (C) 2020 - 2021 Dylan Prins
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.
+# If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+
+# You may contact me at admin@sinelservers.xyz
+
 
 import discord
-import json
-import os
-
+from typing import Union
 from discord.ext import commands
-from data.bot.bot_functions import string_pop, get_top_dict, bump_total_mod, get_id_mention, format_member_pretty
-from data.bot.bot_config import config
+
+from functions import string_pop, determine_prefix
+from classes.exceptions import NoDataError
+from classes.database.guild import Counting
+from classes.database.guild import Settings
+from classes.database.guild import Bump as Bmp
+from classes.get_id import get_id
+from config import config
 
 
 # ---------------------------------Code------------------------------------ #
 
 class Bump(commands.Cog):
-    def __init__(self, client):
-        total_guilds = 0
-        total_people = 0
-        total_bumps = 0
-        self.client = client
-        self.client.bumpDict = {}
-        for guildid in os.listdir("./data"):
-            if len(guildid) != 18:
-                continue
-            try:
-                with open(f"./data/{guildid}/bumptotals.json", "r") as fp:
-                    client.bumpDict[str(guildid)] = json.load(fp)
-                    total_guilds += 1
-                    total_people += len(self.client.bumpDict[str(guildid)])
-                    for person in list(self.client.bumpDict[str(guildid)].keys()):
-                        total_bumps += self.client.bumpDict[str(guildid)][person]
-            except FileNotFoundError:
-                continue
-
-        print(f"Loaded {total_bumps} bumps from {total_people} people from {total_guilds} guilds")
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        counting = Counting(message.guild.id)
+        if counting.channel_get_id() == message.channel.id:
+            return
+
         firstbump = False
         if message.author.id == config['DISBOARDID']:
             for embed in message.embeds:
-                if "Bump done" in embed.description:
-                    bumpID = await get_id_mention(embed.description)
+                if ":thumbsup:" in embed.description:
+                    bumpID = await get_id().member(embed.description)
+                    bump = Bmp(message.guild.id, bumpID)
+                    oldtop = str(bump.get_top(raw=True))
 
-                    try:
-                        oldtop = str(await get_top_dict(self.client.bumpDict[str(message.guild.id)], 1, "raw"))
-                        if oldtop is None:
-                            raise KeyError
-                    except KeyError:
+                    if oldtop is None:
                         firstbump = True
                         oldtop = 0
 
-                    await bump_total_mod(self.client, "add", str(bumpID), str(message.guild.id), 1)
-                    top = str(await get_top_dict(self.client.bumpDict[str(message.guild.id)], 1, "raw"))
+                    bump.add_total()
+                    newtop = str(bump.get_top(raw=True))
 
                     send_msg = f"<@{bumpID}>, your bump total has been increased by one!\nType `.bumptotal` to view your current bump total!"
                     if not firstbump:
-                        if oldtop != top:
+                        if oldtop != newtop:
                             send_msg += "\nYou also managed to get the top spot! Nice!"
+                            oldMember = message.guild.get_member(int(oldtop))
+                            send_msg += f"\n\n{oldMember.mention}, you've lost your top spot!"
 
-                            try:
-                                with open(f"./data/{message.guild.id}/roletop.txt", "r") as fp:
-                                    oldID = int(fp.read().replace('\n', ''))
-                                skip = False
-
-                            except FileNotFoundError:
-                                skip = True
-                                oldID = 0
-
-                            with open(f"./data/{message.guild.id}/roletop.txt", "w") as fp:
-                                fp.write(str(bumpID))
-
-                            if not skip:
-                                oldMember = message.guild.get_member(int(oldID))
-                                try:
-                                    send_msg += f"\n\n{oldMember.mention}, you've lost your top spot!"
-                                except AttributeError:
-                                    print(f"Top spot error, here's the deets:\nOldMember object: {oldMember}\nBumpID: {bumpID}\noldtop: {oldtop}\ntop: {top}\noldid: {oldID}\nbumpID: {bumpID}")
                     else:
                         send_msg += "\n\nYou were also the first to bump the server. Congrats!"
 
@@ -84,7 +72,8 @@ class Bump(commands.Cog):
     @commands.command()
     async def bumptotal(self, ctx, person: discord.Member = None):
         if person is None or person.id == ctx.author.id:
-            curScore = await bump_total_mod(self.client, "one", ctx.author.id, ctx.guild.id)
+            bump = Bmp(ctx.guild.id, ctx.author.id)
+            curScore = bump.get_total()
 
             if curScore == 0:
                 await ctx.send("You haven't bumped disboard yet")
@@ -92,7 +81,8 @@ class Bump(commands.Cog):
                 await ctx.send(f"Here is your total times bumped: `{curScore}`")
 
         else:
-            curScore = await bump_total_mod(self.client, "one", person.id, ctx.guild.id)
+            bump = Bmp(ctx.guild.id, ctx.person.id)
+            curScore = bump.get_total()
 
             if curScore == 0:
                 await ctx.send(f"{person} hasn't bumped disboard yet!")
@@ -101,29 +91,29 @@ class Bump(commands.Cog):
 
     @commands.command()
     async def topbumptotal(self, ctx):
+        bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
-            topbumps = await get_top_dict(self.client.bumpDict[str(ctx.guild.id)], 10)
-        except KeyError:
+            topbumps = bump.get_top(10)
+        except NoDataError:
             await ctx.send(content=f"{ctx.author.mention}, looks like nobody has bumped disboard yet")
             return
+
         printstring = ""
+        message = await ctx.send(f"Getting the top 10 total times bumped...")
 
-        message = await ctx.send("Getting the top 10 total times bumped...")
-
-        for num, raw_bumpID_bumpTotal in enumerate(topbumps):
-            user = await self.client.fetch_user(raw_bumpID_bumpTotal[0])
-            username = f"{user.name}#{user.discriminator}"
+        for num, bump_data in enumerate(topbumps):
+            user = await self.bot.fetch_user(bump_data[0])
 
             endstring = ""
             for funny in config['BUMP_FUNNIES']:
-                if raw_bumpID_bumpTotal[1] == funny[0]:
+                if bump_data[1] == funny[0]:
                     endstring = f" — {funny[1]}"
 
             else:
                 if num >= 9:
-                    printstring += f"{num + 1})   {username} — {raw_bumpID_bumpTotal[1]}{endstring}\n"
+                    printstring += f"{num + 1})   {user} — {bump_data[1]}{endstring}\n"
                 else:
-                    printstring += f"{num + 1})    {username} — {raw_bumpID_bumpTotal[1]}{endstring}\n"
+                    printstring += f"{num + 1})    {user} — {bump_data[1]}{endstring}\n"
 
         await message.edit(
             content=f"{ctx.author.mention}, here are the top 10 total times bumped:\n```{printstring}```")
@@ -146,23 +136,50 @@ class Bump(commands.Cog):
             person_name = "your"
             person_id = ctx.author.id
         else:
-            person_name = f"{await format_member_pretty(person)}'s"
+            person_name = f"{person}'s"
             person_id = person.id
 
+        bump = Bmp(ctx.guild.id, person_id)
         if str(amount)[0] == "-":
             amount = await string_pop(amount, 0)
             if amount.isnumeric():
-                await bump_total_mod(self.client, "minus", person_id, ctx.guild.id, int(amount))
+                bump.remove_total(amount)
                 await ctx.send(f"Changed {person_name} bump total by -{amount}")
             else:
                 await ctx.send(f"{ctx.author.mention}, Please give a valid amount!")
         else:
             if amount.isnumeric():
-                await bump_total_mod(self.client, "add", person_id, ctx.guild.id, int(amount))
+                bump.add_total(amount)
                 await ctx.send(f"Changed {person_name} bump total by {amount}")
             else:
                 await ctx.send(f"{ctx.author.mention}, Please give a valid amount!")
 
+    @commands.command()
+    async def resetbumptotal(self, ctx, person: Union[discord.Member, str]):
+        if ctx.author.id not in config["SUPERADMINIDS"] and ctx.author.id not in Settings(ctx.guild.id).get_setting("adminslist") and not ctx.author.guild_permissions.administrator:
+            await ctx.send(f"{ctx.author.mention}, you can't use this command!")
+            return
 
-def setup(client):
-    client.add_cog(Bump(client))
+        if person is discord.Member:
+            if person.id == ctx.author.id:
+                person_name = "your"
+                person_id = ctx.author.id
+            else:
+                person_name = f"{person}'s"
+                person_id = person.id
+
+            bump = Bmp(ctx.guild.id, person_id)
+            bump.reset_total()
+            await ctx.send(f"Reset {person_name} bump total!")
+
+        elif person == "server":
+            bump = Bmp(ctx.guild.id)
+            bump.reset_guild_total()
+            await ctx.send(f"Reset everyone's bump total!")
+
+        else:
+            await ctx.send(f"That's not a valid argument! Type `{await determine_prefix(self.bot, ctx, True)}help resetbumptotal` for help!")
+
+
+def setup(bot):
+    bot.add_cog(Bump(bot))

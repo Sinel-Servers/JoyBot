@@ -1,18 +1,36 @@
-# --------------------------JoyBot - Python Branch-------------------------#
-# --------------------------------Settings---------------------------------#
+# JoyBot - Discord Bot
+# Copyright (C) 2020 - 2021 Dylan Prins
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-import os
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.
+# If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+
+# You may contact me at admin@sinelservers.xyz
+
+
 from discord.ext import commands
-from data.bot.bot_functions import guild_settings, get_id_mention, text_pretty_mid_end, gen_settings, \
-                                   format_member_pretty, get_id_channel, counting_channel
-from data.bot.bot_config import config
+
+from functions import text_pretty_mid_end, determine_prefix
+from classes.database.guild import Settings as Sttngs
+from classes.database.guild import Counting
+from classes.get_id import get_id
+from config import config
 
 
 # ---------------------------------Code------------------------------------#
 
 class Settings(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def listsettings(self, ctx):
@@ -20,13 +38,15 @@ class Settings(commands.Cog):
             await ctx.send("Hey, you can't use this command!")
             return
 
-        settings = await guild_settings(ctx.guild.id, ctx)
-        if not settings:
-            await gen_settings(ctx.guild.id)
+        settings = Sttngs(ctx.guild.id)
+        cur_settings = settings.get_all_settings()
 
         sendstring = ""
-        for setting in list(settings.keys()):
-            sendstring += f"{await text_pretty_mid_end(setting, settings[setting])}\n"
+        for setting in cur_settings:
+            sendstring += f"{await text_pretty_mid_end(setting, cur_settings[setting])}\n"
+
+        counting_channel = Counting(ctx.guild.id).channel_get_id()
+        sendstring += f"{await text_pretty_mid_end('counting_channel', str(counting_channel))}\n"
 
         await ctx.send(f"Here are the settings:```\n{sendstring}```")
 
@@ -36,88 +56,100 @@ class Settings(commands.Cog):
             await ctx.send("Hey, you can't use this command!")
             return
 
+        settings = Sttngs(ctx.guild.id)
+
         if setting == "admins_list":
             if value is None:
                 await ctx.send("Please use this command with a mention!")
                 return
 
-            user = self.client.get_user(await get_id_mention(value))
+            user = self.bot.get_user(await get_id().member(value))
             if user is None:
                 await ctx.send("Please use this command with a mention!")
                 return
 
-            curadmins = await guild_settings(ctx.guild.id, ctx, "admins_list")
+            adminslist = settings.get_setting("adminslist")
 
-            if user.id in curadmins:
-                curadmins.remove(user.id)
-                await ctx.send(f"Removed {await format_member_pretty(user)} from the admins list")
-                await guild_settings(ctx.guild.id, ctx, "admins_list", curadmins)
+            if user.id in adminslist:
+                adminslist.remove(user.id)
+                await ctx.send(f"Removed {user} from the admins list")
+                settings.set_setting("adminslist", adminslist)
                 return
 
-            curadmins.append(user.id)
-            await guild_settings(ctx.guild.id, ctx, "admins_list", curadmins)
-            await ctx.send(f"Added {await format_member_pretty(user)} to the admins list")
+            adminslist.append(user.id)
+            settings.set_setting("adminslist", adminslist)
+            await ctx.send(f"Added {user} to the admins list")
             return
 
         elif setting == "global_randomface":
-            curface = await guild_settings(ctx.guild.id, ctx, "global_randomface")
-            if curface is False:
-                await guild_settings(ctx.guild.id, ctx, "global_randomface", True)
+            global_randomface = settings.get_setting("global_randomface")
+            if global_randomface == "False":
+                settings.set_setting("global_randomface", "True")
                 await ctx.send("Made randomface get pictures from everyone")
                 return
             else:
-                await guild_settings(ctx.guild.id, ctx, "randomface_global", False)
+                settings.set_setting("global_randomface", "False")
                 await ctx.send("Made randomface get pictures from the specified user")
                 return
 
         elif setting == "global_addface":
-            curface = await guild_settings(ctx.guild.id, ctx, "global_addface")
-            if curface is False:
-                await guild_settings(ctx.guild.id, ctx, "global_addface", True)
+            global_addface = settings.get_setting("global_addface")
+            if global_addface is "False":
+                settings.set_setting("global_addface", "True")
                 await ctx.send("Made addface usable by anyone")
                 return
             else:
-                await guild_settings(ctx.guild.id, ctx, "global_addface", False)
+                settings.set_setting("global_addface", "False")
                 await ctx.send("Made addface admins only")
                 return
 
         elif setting == "counting_channel":
-            channel_id = await get_id_channel(value)
             if value is None:
-                cursetting = await guild_settings(ctx.guild.id, ctx, "counting_channel")
-                if cursetting is None:
+                counting_channel = settings.get_setting("counting_channel")
+                if counting_channel is None:
                     await ctx.send("The setting is already reset!")
                     return
-                curnum = await counting_channel(self.client, "get_val", ctx.guild.id)
-                await guild_settings(ctx.guild.id, ctx, "counting_channel", "None")
-                channel = self.client.get_channel(cursetting)
+
+                counting = Counting(ctx.guild.id)
+
+                curnum = counting.get()
+                settings.set_setting("counting_channel", "None")
+                channel = self.bot.get_channel(counting_channel)
                 await channel.send(f"The counting is over! You got to a total of `{curnum}`!\n——————————")
                 await ctx.send("Reset the counting channel setting!")
                 return
 
-            channel = self.client.get_channel(channel_id)
+            counting_channel = await get_id().channel(value)
+            channel = self.bot.get_channel(counting_channel)
             if channel is None:
                 await ctx.send("That's not a valid channel in this guild!")
                 return
 
-            try:
-                os.remove(f"./data/{ctx.guild.id}/count.txt")
-            except FileNotFoundError:
-                pass
-            try:
-                os.remove(f"./data/{ctx.guild.id}/count_id.txt")
-            except FileNotFoundError:
-                pass
+            settings.set_setting("counting_channel", counting_channel)
 
-            await guild_settings(ctx.guild.id, ctx, "counting_channel", channel_id)
             await channel.send("——————————\nThis channel has been set up as the counting channel! It starts from 0!\nHere, i'll go first:")
             await channel.send("0")
-            await counting_channel(self.client, "set", ctx.guild.id, 0, "", channel=channel)
+            Counting(ctx.guild.id).set(0)
             await ctx.send("Counting channel is set up!")
 
+        elif setting == "prefix":
+            if not ctx.author.guild_permissions.administrator or ctx.author.id not in config["SUPERADMINIDS"]:
+                pass
+
+            if value is None:
+                await ctx.send("Please specify what the new prefix is!")
+                return
+
+            if len(value) > 10:
+                await ctx.send("Please keep the prefix under 10 characters!")
+                return
+
+            settings.set_setting("prefix", value)
+            await ctx.send("Successfully set the new prefix!")
+
         else:
-            await ctx.send(f"That's not a valid setting, you can use `{config['PREFIX']}listsettings` to get the settings list.")
+            await ctx.send(f"That's not a valid setting, you can use `{await determine_prefix(self.bot, ctx, True)}listsettings` to get the settings list.")
 
 
-def setup(client):
-    client.add_cog(Settings(client))
+def setup(bot):
+    bot.add_cog(Settings(bot))
