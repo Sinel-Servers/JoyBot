@@ -130,7 +130,9 @@ class _important(commands.Cog):
             return
 
         await ctx.send("This command gave an error, it has been reported!")
-        await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```")
+        await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```\n\n"
+                                       f"The message: ```\n{ctx.message.content}\n```\n\n"
+                                       f"The user trying to break the bot: {ctx.author}")
         raise error
 
     #------ON JOIN/LEAVE---------#
