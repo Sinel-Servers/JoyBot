@@ -66,8 +66,7 @@ class Bump(commands.Cog):
                     if not firstbump:
                         if oldtop != newtop:
                             send_msg += "\nYou also managed to get the top spot! Nice!"
-                            oldMember = message.guild.get_member(int(oldtop))
-                            send_msg += f"\n\n{oldMember.mention}, you've lost your top spot!"
+                            send_msg += f"\n\n<@{oldtop}>, you've lost your top spot!"
 
                     else:
                         send_msg += "\n\nYou were also the first to bump the server. Congrats!"

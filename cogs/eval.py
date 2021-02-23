@@ -30,19 +30,25 @@ class evalClass(commands.Cog):
 		self.bot = bot
 
 	@commands.command(aliases=["eval"])
-	async def evaluate(self, ctx, awa: Optional[bool], *, code):
-		if ctx.author.id == 246862123328733186:
-			try:
-				if awa:
-					result = await eval(code)
-				else:
-					result = eval(code)
-				if result == "":
-					await ctx.send("No output")
-				else:
-					await ctx.send(result)
-			except Exception as e:
-				await ctx.send(f"Exception: `{e.__class__.__name__}: {e}`")
+	async def evaluate(self, ctx, awa: Optional[bool], *, code=None):
+		if ctx.author.id not in config["SUPERADMINIDS"]:
+			await ctx.send(f"{ctx.author.mention}, you can't use this command!")
+			return
+		if code is None:
+			await ctx.send(f"Please supply some code!")
+			return
+
+		try:
+			if awa:
+				result = await eval(code)
+			else:
+				result = eval(code)
+			if result == "":
+				await ctx.send("No output")
+			else:
+				await ctx.send(result)
+		except Exception as e:
+			await ctx.send(f"Exception: `{e.__class__.__name__}: {e}`")
 
 	@commands.command(aliases=["e", "exec"])
 	async def execute(self, ctx, awa: Optional[bool], *, code=None):
