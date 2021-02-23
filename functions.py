@@ -119,7 +119,7 @@ async def text_pretty_mid_end(starttext, endtext, mid=config["CMD_HELP"]["MID"],
     return f"{starttext}{spaces1}{mid}{spaces2}{endtext}"
 
 
-async def sort_dict(dictionary, num=10000000000000000, return_type="full"):
+def sort_dict(dictionary, num=10000000000000000, return_type="full"):
     topx = {k: v for k, v in sorted(dictionary.items(), key=itemgetter(1), reverse=True)[:num]}
 
     return_list = []

@@ -20,6 +20,7 @@ import json
 from ast import literal_eval
 from config import config
 from sqlite3 import OperationalError, IntegrityError
+import asyncio
 
 import functions
 from classes.database import Database
@@ -65,7 +66,7 @@ class Bump(Database):
         if top == {}:
             raise NoDataError
         if raw is True:
-            return top[0]  # noqa
+            return top[0]
         return top
 
     def get_total(self):
