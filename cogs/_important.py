@@ -138,6 +138,9 @@ class _important(commands.Cog):
     #------ON JOIN/LEAVE---------#
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
+        if guild.name is None:
+            return
+
         print(f"Left the guild '{guild.name}'")
         Bump(guild.id).reset_guild_total()
         Settings(guild.id).reset_settings(False)
