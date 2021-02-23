@@ -19,7 +19,7 @@
 import discord
 from discord.ext import commands
 from functions import determine_prefix
-from classes.database.guild import Counting, Settings, Ban
+from classes.database.guild import Counting, Settings, Ban, Pictures, Bump
 from config import config
 
 
@@ -133,7 +133,15 @@ class _important(commands.Cog):
         await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```")
         raise error
 
-    #------ON JOIN---------#
+    #------ON JOIN/LEAVE---------#
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        print(f"Left the guild '{guild.name}'")
+        Bump(guild.id).reset_guild_total()
+        Settings(guild.id).reset_settings(False)
+        Pictures(guild.id).delete_all()
+        Counting(guild.id).reset()
+
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         print(f"Joined the guild '{guild.name}'")
