@@ -208,7 +208,6 @@ class Pictures(Database):
             lookup = self._lookup_record("g_" + str(self.guild_id))
             all_user_pictures = {}
             for user in lookup:
-                print(user)
                 all_user_pictures[user[0]] = literal_eval(Storage(user[1]).un_base64())
 
             return all_user_pictures
