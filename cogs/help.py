@@ -52,7 +52,7 @@ class Help(commands.Cog):
                             sendstring += f"\t{await text_pretty_mid_end(command_name, command['flavor_text'])}\n"
 
                 # Add the administrator only commands
-                if ctx.author.guild_permissions.administrator or ctx.author.id in config["SUPERADMINIDS"] or ctx.author.id in Settings(ctx.guild.id).get_setting("adminslist"):
+                if ctx.author.guild_permissions.administrator or ctx.author.id in config["SUPERADMINIDS"] or ctx.author.id in Settings(ctx.guild.id).get_setting("admins_list"):
                     sendstring += "\nAdmins:\n"
                     for command in config["CMD_HELP"]["ADMIN"]:
                         command_name = command

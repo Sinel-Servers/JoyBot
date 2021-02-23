@@ -44,7 +44,7 @@ config = {
     ],
 
     # ID of the error guild | ID of the error channel | ID of the DM channel
-    "ERRORDATA": (775532211763544114, 813486475110776864, 813405943689379872),
+    "ERRORDATA": (775532211763544114, 777407493495455744, 813405943689379872),
 
     #-----Less important things---------#
 

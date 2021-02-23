@@ -98,7 +98,7 @@ class Bump(commands.Cog):
     async def topbumptotal(self, ctx):
         bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
-            topbumps = await bump.get_top(10)
+            topbumps = bump.get_top(10)
             if not topbumps:
                 raise NoDataError
 
@@ -165,7 +165,7 @@ class Bump(commands.Cog):
 
     @commands.command()
     async def resetbumptotal(self, ctx, person: Union[discord.Member, str]):
-        if ctx.author.id not in config["SUPERADMINIDS"] and ctx.author.id not in Settings(ctx.guild.id).get_setting("adminslist") and not ctx.author.guild_permissions.administrator:
+        if ctx.author.id not in config["SUPERADMINIDS"] and ctx.author.id not in Settings(ctx.guild.id).get_setting("admins_list") and not ctx.author.guild_permissions.administrator:
             await ctx.send(f"{ctx.author.mention}, you can't use this command!")
             return
 

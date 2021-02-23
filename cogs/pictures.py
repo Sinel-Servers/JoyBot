@@ -83,7 +83,7 @@ class Pictures(commands.Cog):
 
     @commands.command()
     async def addpic(self, ctx, member: discord.Member = None):
-        if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("adminslist"):
+        if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("admins_list"):
             await ctx.send("You're not an admin!")
             return
 

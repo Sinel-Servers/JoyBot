@@ -68,16 +68,16 @@ class Settings(commands.Cog):
                 await ctx.send("Please use this command with a mention!")
                 return
 
-            adminslist = settings.get_setting("adminslist")
+            admins_list = settings.get_setting("admins_list")
 
-            if user.id in adminslist:
-                adminslist.remove(user.id)
+            if user.id in admins_list:
+                admins_list.remove(user.id)
                 await ctx.send(f"Removed {user} from the admins list")
-                settings.set_setting("adminslist", adminslist)
+                settings.set_setting("admins_list", admins_list)
                 return
 
-            adminslist.append(user.id)
-            settings.set_setting("adminslist", adminslist)
+            admins_list.append(user.id)
+            settings.set_setting("admins_list", admins_list)
             await ctx.send(f"Added {user} to the admins list")
             return
 

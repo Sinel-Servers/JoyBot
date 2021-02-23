@@ -43,7 +43,7 @@ class Message(Database):
         lookup = self._lookup_record("message", f"user_id = {self.user_id}")
 
         if not lookup:
-            self._add_record("message", [("time", str(int(time()))), ("user_id", self.user_id), ("base64", "'e30='")])
+            self._add_record("message", [("time", str(int(time() * 50))), ("user_id", self.user_id), ("base64", "'e30='")])
             lookup = "e30="
         else:
             lookup = lookup[0][-1]
