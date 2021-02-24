@@ -99,8 +99,7 @@ class _important(commands.Cog):
             return
         if message.author.id == config["BOTID"]:
             return
-        counting = Counting(message.guild.id)
-        if counting.channel_get_id() == message.channel.id:
+        if Counting(message.guild.id).channel_get_id() == message.channel.id:
             return
 
         await message.channel.send(f"My prefix here is `{await determine_prefix(self.bot, message, True)}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\n"

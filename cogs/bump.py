@@ -43,8 +43,7 @@ class Bump(commands.Cog):
         except AttributeError:
             return
 
-        counting = Counting(message.guild.id)
-        if counting.channel_get_id() == message.channel.id:
+        if Counting(message.guild.id).channel_get_id() == message.channel.id:
             return
 
         firstbump = False
