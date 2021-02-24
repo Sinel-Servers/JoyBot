@@ -134,7 +134,7 @@ def sort_dict(dictionary, num=10000000000000000, return_type="full"):
 
     elif return_type == "full":
         if num == 1:
-            return return_list[0]
+            return return_list[0] if len(return_list) != 0 else {}
         return return_list
 
     else:

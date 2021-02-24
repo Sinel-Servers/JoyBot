@@ -63,8 +63,8 @@ class Bump(Database):
         :return: A list of tuples, if raw is off. Else a string of the top id
         """
         top = functions.sort_dict(self.bumpDict, num)
-        if top == {}:
-            raise NoDataError
+        if not top:
+            return None
         if raw is True:
             return top[0]
         return top

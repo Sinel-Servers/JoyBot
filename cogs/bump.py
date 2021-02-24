@@ -52,14 +52,14 @@ class Bump(commands.Cog):
                 if ":thumbsup:" in embed.description:
                     bumpID = await get_id().member(embed.description)
                     bump = Bmp(message.guild.id, bumpID)
-                    oldtop = str(bump.get_top(raw=True))
+                    oldtop = bump.get_top(raw=True)
 
                     if oldtop is None:
                         firstbump = True
                         oldtop = 0
 
                     bump.add_total()
-                    newtop = str(bump.get_top(raw=True))
+                    newtop = bump.get_top(raw=True)
 
                     send_msg = f"<@{bumpID}>, your bump total has been increased by one!\nType `.bumptotal` to view your current bump total!"
                     if not firstbump:
