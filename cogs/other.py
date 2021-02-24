@@ -148,8 +148,10 @@ class Other(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-        link = "https://sinelservers.xyz/stuff-made/JoyBot/invite.php"
-        await ctx.send(f"{ctx.author.mention}, here's an invite link to add JoyBot to your own server:\n{link}")
+        await ctx.send(f"""
+{ctx.author.mention}, here's an invite link to add JoyBot to your own server:
+https://sinelservers.xyz/stuff-made/JoyBot/invite.php
+        """)
 
     @commands.command()
     async def info(self, ctx):
