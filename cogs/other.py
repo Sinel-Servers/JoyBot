@@ -153,7 +153,7 @@ class Other(commands.Cog):
 
     @commands.command()
     async def info(self, ctx):
-        blurb = f"""
+        await ctx.send(f"""
 Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
 I like long walks on the beach and watching the sunset :)
 
@@ -163,16 +163,21 @@ You can also make suggestions which you'd like added (although keep in mind my c
 
 Hope you enjoy using me!
 - JoyBot
-        """
-        await ctx.send(blurb)
+        """)
 
     @commands.command()
     async def privacy(self, ctx):
-        blurb = f"""
+        await ctx.send(f"""
 Hi, you're probably wondering what data we store on you, and that's okay! Everybody has a right to privacy. Check out our privacy policy here:
 https://sinelserve8rs.xyz/stuff-made/JoyBot/privacy.php
-        """
-        await ctx.send(blurb)
+        """)
+
+    @commands.command()
+    async def source(self, ctx):
+        await ctx.send("""
+Ah okay, so you're wondering how i look like? Well, that's fine, just don't shame me i'm a bit messy 🥺
+https://github.com/Sinel-Servers-Limited/JoyBot
+""")
 
 
 def setup(bot):
