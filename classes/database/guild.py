@@ -34,20 +34,7 @@ class Bump(Database):
         super().__init__("joybot_main")
         self.guild_id = guild_id
         self.user_id = user_id
-
-        # Temporary code to add the first bump id table
-        self._temp_update_tables()
-
-        # Not temporary
         self.bumpDict, self.first_bump_id = self._loadbumps()
-
-    def _temp_update_tables(self):
-        lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
-        if not lookup:
-            return
-
-        if len(lookup[0]) == 2:
-            self._exec_sql_code("ALTER TABLE bump ADD first_bump_id INTEGER;")
 
     def _loadbumps(self):
         """ Update/load all the bump data """
