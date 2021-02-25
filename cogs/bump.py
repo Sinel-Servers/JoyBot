@@ -92,7 +92,6 @@ class Bump(commands.Cog):
 
         pos = bump.get_pos()+1
         if pos in range(1, 4):
-            print("here")
             badgename = f"badge_{pos}_place"
             badgeid = config["EMOJI_IDS"][badgename]
             special_badges += f"<:{badgename}:{badgeid}>"
@@ -104,7 +103,6 @@ class Bump(commands.Cog):
         normal_badges = ""
         for value in normal_badges_nums:
             value = config["BUMP_FUNNIES"][value]
-            print(value)
             if value.startswith("!"):
                 value = await string_pop(value, 0)
             else:
@@ -119,7 +117,6 @@ class Bump(commands.Cog):
         event_badges = ""
         if event_badges:
             embed.add_field(name="Event Badges", value=event_badges, inline=False)
-
 
         await ctx.send(embed=embed)
 
