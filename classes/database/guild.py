@@ -140,11 +140,13 @@ class Bump(Database):
             self.streak_data["cur_streak"] = ""
 
         if self.streak_data["cur_streak"] == str(self.user_id):
-            self.streak_data[str(self.user_id)] += 1
+            self.streak_data[str(self.user_id)][0] += 1
+            if self.streak_data[str(self.user_id)][0] > self.streak_data[str(self.user_id)][1]:
+                self.streak_data[str(self.user_id)][1] = self.streak_data[str(self.user_id)][0]
 
         else:
             self.streak_data["cur_streak"] = str(self.user_id)
-            self.streak_data[str(self.user_id)] = 1
+            self.streak_data[str(self.user_id)] = (1, 1)
 
         self._commit()
 
