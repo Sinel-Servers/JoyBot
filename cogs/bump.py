@@ -104,8 +104,12 @@ class Bump(commands.Cog):
         normal_badges = ""
         for value in normal_badges_nums:
             value = config["BUMP_FUNNIES"][value]
-            value = await string_pop(value, 0)
-            value = await string_pop(value, 0)
+            print(value)
+            if value.startswith("!"):
+                value = await string_pop(value, 0)
+            else:
+                badgeid = config["EMOJI_IDS"][value]
+                value = f"<:{value}:{badgeid}>"
             normal_badges += f":{value}: "
 
         if normal_badges:
