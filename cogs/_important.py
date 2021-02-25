@@ -114,7 +114,7 @@ class _important(commands.Cog):
         elif isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send("Please use all required arguments!")
             return
-        elif "403" in str(error):
+        elif "50013" in str(error):
             try:
                 await ctx.send(  # TODO: Figure out which permissions are missing
                     f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\n"
