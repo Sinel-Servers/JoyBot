@@ -34,26 +34,40 @@ class Bump(Database):
         super().__init__("joybot_main")
         self.guild_id = guild_id
         self.user_id = user_id
-        self.bumpDict = self._loadbumps()
+
+        # Temporary code to add the first bump id table
+        self._temp_update_tables()
+
+        # Not temporary
+        self.bumpDict, self.first_bump_id = self._loadbumps()
+
+    def _temp_update_tables(self):
+        lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
+        if not lookup:
+            return
+
+        if len(lookup[0]) == 2:
+            self._exec_sql_code("ALTER TABLE bump ADD first_bump_id INTEGER;")
 
     def _loadbumps(self):
         """ Update/load all the bump data """
         if not self._table_exists("bump"):
-            self._make_table("bump", [("guild_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT")])
+            self._make_table("bump", [("guild_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT"), ("first_bump_id", "INTEGER")])
 
         lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
 
         if not lookup:
             self._add_record("bump", [("guild_id", self.guild_id), ("base64", "'e30='")])
-            lookup = "e30="
+            lookup = self.guild_id, "e30=", None
         else:
-            lookup = lookup[0][1]
+            lookup = lookup[0]
 
-        return json.loads(Storage(lookup).un_base64())
+        return json.loads(Storage(lookup[1]).un_base64()), lookup[2]
 
     def _commit(self):
         """ Commits a change to the database """
-        self._update_record("bump", [("base64", functions.quotify(Storage(json.dumps(self.bumpDict)).do_base64()))], f"guild_id = {self.guild_id}")
+        self._update_record("bump", [("base64", functions.quotify(Storage(json.dumps(self.bumpDict)).do_base64())),
+                                     ("first_bump_id", self.first_bump_id)], f"guild_id = {self.guild_id}")
 
     def get_top(self, num: int = 1, raw: bool = False):
         """ Gets the top {num} entries.
@@ -69,6 +83,11 @@ class Bump(Database):
             return top[0]
         return top
 
+    def get_pos(self):
+        toplist = self.get_top(num=100000000)
+        toplist = [int(listitem[0]) for listitem in toplist]
+        return toplist.index(self.user_id)
+
     def get_total(self):
         """ Gets the bump total """
         try:
@@ -83,6 +102,9 @@ class Bump(Database):
 
         :param amount: The amount to add to the total
         """
+        if self.first_bump_id is None:
+            self.first_bump_id = self.user_id
+
         if str(self.user_id) in self.bumpDict:
             self.bumpDict[str(self.user_id)] += amount
         else:
@@ -115,6 +137,9 @@ class Bump(Database):
         """ Resets the bump total of the entire guild """
         self.bumpDict = {}
         self._delete_record("bump", f"guild_id = {self.guild_id}")
+
+    def get_first_bump(self):
+        return self.first_bump_id
 
 
 class Settings(Database):

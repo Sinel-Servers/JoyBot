@@ -31,6 +31,7 @@ from config import config
 
 # ---------------------------------Code------------------------------------ #
 
+
 class Bump(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -46,51 +47,77 @@ class Bump(commands.Cog):
         if Counting(message.guild.id).channel_get_id() == message.channel.id:
             return
 
-        firstbump = False
         if message.author.id == config['DISBOARDID']:
             for embed in message.embeds:
                 if ":thumbsup:" in embed.description:
                     bumpID = await get_id().member(embed.description)
                     bump = Bmp(message.guild.id, bumpID)
                     oldtop = bump.get_top(raw=True)
-
-                    if oldtop is None:
-                        firstbump = True
-                        oldtop = 0
+                    firstbumpid = bump.get_first_bump()
 
                     bump.add_total()
                     newtop = bump.get_top(raw=True)
 
                     send_msg = f"<@{bumpID}>, your bump total has been increased by one!\nType `.bumptotal` to view your current bump total!"
-                    if not firstbump:
+                    if firstbumpid is None:
+                        send_msg += "\n\nYou were also the first to bump the server. Congrats!"
+                        if oldtop is not None:
+                            send_msg += "\n(I moved to a new way of tracking the first bump, so sorry that you got this message again!)"
+
+                    else:
                         if oldtop != newtop:
                             send_msg += "\nYou also managed to get the top spot! Nice!"
                             send_msg += f"\n\n<@{oldtop}>, you've lost your top spot!"
-
-                    else:
-                        send_msg += "\n\nYou were also the first to bump the server. Congrats!"
 
                     await message.channel.send(send_msg)
 
     @commands.command()
     async def bumptotal(self, ctx, person: discord.Member = None):
-        if person is None or person.id == ctx.author.id:
-            bump = Bmp(ctx.guild.id, ctx.author.id)
-            curScore = bump.get_total()
+        if person is None:
+            person = ctx.author
 
-            if curScore == 0:
-                await ctx.send("You haven't bumped disboard yet")
-            else:
-                await ctx.send(f"Here is your total times bumped: `{curScore}`")
+        bump = Bmp(ctx.guild.id, person.id)
 
-        else:
-            bump = Bmp(ctx.guild.id, ctx.person.id)
-            curScore = bump.get_total()
+        embed = discord.Embed(
+                title=f"`{person}`'s bump stats",
+                description=f"Bump total: `{bump.get_total()}`"
+            )
 
-            if curScore == 0:
-                await ctx.send(f"{person} hasn't bumped disboard yet!")
-            else:
-                await ctx.send(f"{person} has bumped disboard `{curScore}` times")
+        special_badges = ""
+
+        if bump.get_first_bump() == person.id:
+            badgename = f"badge_first_bump"
+            badgeid = config["EMOJI_IDS"][badgename]
+            special_badges += f"<:{badgename}:{badgeid}>"
+
+        pos = bump.get_pos()+1
+        if pos in range(1, 4):
+            print("here")
+            badgename = f"badge_{pos}_place"
+            badgeid = config["EMOJI_IDS"][badgename]
+            special_badges += f"<:{badgename}:{badgeid}>"
+
+        if special_badges:
+            embed.add_field(name="Special Badges", value=special_badges, inline=False)
+
+        normal_badges_nums = [key for key in config["BUMP_FUNNIES"] if key <= bump.get_total()]
+        normal_badges = ""
+        for value in normal_badges_nums:
+            value = config["BUMP_FUNNIES"][value]
+            value = await string_pop(value, 0)
+            value = await string_pop(value, 0)
+            normal_badges += f":{value}: "
+
+        if normal_badges:
+            embed.add_field(name="Normal Badges", value=normal_badges, inline=False)
+
+        # TODO: Events?
+        event_badges = ""
+        if event_badges:
+            embed.add_field(name="Event Badges", value=event_badges, inline=False)
+
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def topbumptotal(self, ctx):
@@ -108,21 +135,52 @@ class Bump(commands.Cog):
         message = await ctx.send(f"Getting the top 10 total times bumped...")
 
         for num, bump_data in enumerate(topbumps):
+            num += 1
             user = await self.bot.fetch_user(bump_data[0])
 
             endstring = ""
-            for funny in config['BUMP_FUNNIES']:
-                if bump_data[1] == funny[0]:
-                    endstring = f" — {funny[1]}"
+            try:
+                endstring = " — " + config["BUMP_FUNNIES"][bump_data[1]][0]
+            except KeyError:
+                pass
 
+            try:
+                badge = ""
+                if num in range(1, 4):
+                    badgename = f"badge_{num}_place"
+                    badgeid = config["EMOJI_IDS"][badgename]
+                    badge = f"<:{badgename}:{badgeid}>"
+
+                if badge == "":
+                    badgename = config["BUMP_FUNNIES"][bump_data[1]][1]
+                    if badgename.startswith("!"):
+                        badgename = await string_pop(badgename, 0)
+                        badge = f":{badgename}:"
+
+                    else:
+                        badgeid = config["EMOJI_IDS"][badgename]
+                        badge = f"<:{badgename}:{badgeid}>"
+
+                if badge == "":
+                    if user.id == bump.get_first_bump():
+                        badgename = "badge_first_bump"
+                        badgeid = config["EMOJI_IDS"][badgename]
+                        f"<:{badgename}:{badgeid}>"
+
+            except KeyError:
+                badge = "\u200e \u200e \u200e \u200e \u200e \u200e \u200e"
+
+            if num >= 9:
+                printstring += f"{badge} {num})  {user} — {bump_data[1]} {endstring}\n"
             else:
-                if num >= 9:
-                    printstring += f"{num + 1})   {user} — {bump_data[1]}{endstring}\n"
-                else:
-                    printstring += f"{num + 1})    {user} — {bump_data[1]}{endstring}\n"
+                printstring += f"{badge} {num})   {user} — {bump_data[1]} {endstring}\n"
 
-        await message.edit(
-            content=f"{ctx.author.mention}, here are the top 10 total times bumped:\n```{printstring}```")
+        top = discord.Embed(
+                title=f"Top bump totals for `{ctx.guild.name}`",
+                description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
+            )
+        top.add_field(name="Leaderboard", value=printstring, inline=False)
+        await message.edit(embed=top, content="\u200e")
 
     @commands.command()
     async def changebumptotal(self, ctx, person: discord.Member = None, amount: Union[int, str] = None):

@@ -48,15 +48,40 @@ config = {
 
     #-----Less important things---------#
 
-    # Aftertext and the number that someone must have in
-    # order for the text to appear | format: (num, text)
-    "BUMP_FUNNIES": [
-        (1, "Babies' first bump"), (10, "Two digits!"), (12, "Neat: Part 1"),
-        (69, "Nice."), (96, "Not nice."), (100, "Three digits!"),
-        (123, "Neat: Part 2"), (180, "Wo-ah, we're halfway there!"), (360, "All around!"),
-        (404, "Total not found"), (420, "Blaze it 🌿"), (500, "Now that's dedication."),
-        (666, "Devil's number"), (1000, "Four digits!"), (1234, "Neat: Part 3"), (9001, "Over 9000!")
-    ],
+    # Number required, the aftertext and the name of the emoji. Prefix with ! to use discord emojis
+    "BUMP_FUNNIES": {
+        1: ("Babies' first bump", "!baby"),
+        4: ("The lucky number!", "!four_leaf_clover"),
+        10: ("Two digits!", "!keycap_ten"),
+        12: ("Neat: Part 1", "!regional_indicator_n"),
+        51: ("Aliens!", "!alien"),
+        69: ("Nice.", "!underage"),
+        96: ("Not nice.", "!double_vertical_bar"),
+        100: ("Three digits!", "!100"),
+        123: ("Neat: Part 2", "!regional_indicator_e"),
+        180: ("Wo-ah, we're halfway there!", "badge_n180"),
+        200: ("Bump OK.", "!ok"),
+        360: ("All around!", "!yellow_circlue"),
+        404: ("Total not found", "!warning"),
+        420: ("Blaze it 🌿", "!herb"),
+        500: ("Now that's dedication.", "!clock2"),
+        666: ("Devil's number", "!smiling_imp"),
+        777: ("Luckier than number 4!", "!slot_machine"),
+        1000: ("Four digits!", "!regional_indicator_a"),
+        1234: ("1234!", "!1234"),
+        9001: ("Over 9000!", "!rosette"),
+        12345: ("Neat: The Finale", "!regional_indicator_t"),
+    },
+
+    # All the emojis and their corresponding IDS
+    "EMOJI_IDS": {
+        "badge_first_bump": 814419207118782475,
+        "badge_1_place": 814419207080378379,
+        "badge_2_place": 814419206879313961,
+        "badge_3_place": 814419207012876289,
+
+        "badge_n180": 814425080566251530
+    },
 
     # Space goal, used for the help command
     # MUST BE BIGGER THAN HELP_NAME_LIMIT or your program will go in a infinite loop
