@@ -80,7 +80,7 @@ class Bump(commands.Cog):
 
         embed = discord.Embed(
                 title=f"`{person}`'s bump stats",
-                description=f"Bump total: `{bump.get_total()}`"
+                description=f"Bump total: `{bump.get_total()}` (`{bump.get_pos()}` on the leaderboard)"
             )
 
         special_badges = ""
