@@ -102,7 +102,7 @@ class Bump(commands.Cog):
         normal_badges_nums = [key for key in config["BUMP_FUNNIES"] if key <= bump.get_total()]
         normal_badges = ""
         for value in normal_badges_nums:
-            value = config["BUMP_FUNNIES"][value]
+            value = config["BUMP_FUNNIES"][value][1]
             if value.startswith("!"):
                 value = await string_pop(value, 0)
             else:
