@@ -176,7 +176,7 @@ config = {
         "ADMINISTATOR": {
             "changesetting": {"flavor_text": "Change a setting", "format": "<depends on setting>", "long_text": "Change a particular setting", "extra_info": False, "aliases": []},
             "changebumptotal": {"flavor_text": "Changes bumptotal of a user", "format": "<member> <amount>", "long_text": "This command changes a user's bumptotal by a certain amount", "extra_info": False, "aliases": []},
-            "resetbumptotal": {"flavor_text": "Resets the bumptotal of a user / everyone", "format": "<[>member | 'server'>", "long_text": "This command will reset everyone's bump total, or just a user.", "extra_info": False, "aliases": []},
+            "resetbumptotal": {"flavor_text": "Resets the bumptotal of a user / everyone", "format": "<[member | 'server'>", "long_text": "This command will reset everyone's bump total, or just a user.", "extra_info": False, "aliases": []},
             "listsettings": {"flavor_text": "List settings", "format": False, "long_text": "List all the settings and their values", "extra_info": False, "aliases": []}
         },
 
