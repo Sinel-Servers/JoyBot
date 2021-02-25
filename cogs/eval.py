@@ -25,6 +25,7 @@ from discord.ext import commands
 from config import config
 from functions import string_pop
 
+
 class evalClass(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
