@@ -61,7 +61,7 @@ config = {
         123: ("Neat: Part 2", "!regional_indicator_e"),
         180: ("Wo-ah, we're halfway there!", "badge_n180"),
         200: ("Bump OK.", "!ok"),
-        360: ("All around!", "!yellow_circlue"),
+        360: ("All around!", "!yellow_circle"),
         404: ("Total not found", "!warning"),
         420: ("Blaze it 🌿", "!herb"),
         500: ("Now that's dedication.", "!clock2"),
