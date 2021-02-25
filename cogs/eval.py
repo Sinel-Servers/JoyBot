@@ -23,7 +23,7 @@ import contextlib
 from typing import Optional
 from discord.ext import commands
 from config import config
-
+from functions import string_pop
 
 class evalClass(commands.Cog):
 	def __init__(self, bot):
@@ -58,6 +58,17 @@ class evalClass(commands.Cog):
 		if code is None:
 			await ctx.send(f"Please supply some code!")
 			return
+		if code.startswith("```py"):
+			code = await string_pop(code, 0)
+			code = await string_pop(code, 0)
+			code = await string_pop(code, 0)  # Yes i know it's bad, but it works
+			code = await string_pop(code, 0)
+			code = await string_pop(code, 0)
+
+		if code.endswith("```"):
+			code = await string_pop(code, -1)
+			code = await string_pop(code, -1)
+			code = await string_pop(code, -1)
 
 		str_obj = io.StringIO()  # Retrieves a stream of data
 		try:
