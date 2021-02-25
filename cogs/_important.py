@@ -128,9 +128,15 @@ class _important(commands.Cog):
             await ctx.send("That's not a valid member!")
             return
 
+        elif isinstance(error, commands.errors.UnexpectedQuoteError):
+            await ctx.send("Hey, due to the foundation JoyBot is built on, you can't use quotes like that! If you can, "
+                           "try replacing the double-quotes with single-quotes, that usually fixes things. Sorry for the "
+                           "inconvenience!")
+            return
+
         await ctx.send("This command gave an error, it has been reported!")
-        await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```\n\n"
-                                       f"The message: ```\n{ctx.message.content}\n```\n\n"
+        await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```\n"
+                                       f"The message: ```\n{ctx.message.content}\n```\n"
                                        f"The user trying to break the bot: {ctx.author}")
         raise error
 
