@@ -34,27 +34,45 @@ class Bump(Database):
         super().__init__("joybot_main")
         self.guild_id = guild_id
         self.user_id = user_id
-        self.bumpDict, self.first_bump_id = self._loadbumps()
+        self.bumpDict, self.first_bump_id, self.streak_data = self._loadbumps()
 
     def _loadbumps(self):
         """ Update/load all the bump data """
         if not self._table_exists("bump"):
-            self._make_table("bump", [("guild_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT"), ("first_bump_id", "INTEGER")])
+            self._make_table("bump", [
+                ("guild_id", "INTEGER PRIMARY KEY"),
+                ("base64", "TEXT"),
+                ("first_bump_id", "INTEGER"),
+                ("streak_base64", "TEXT")
+            ])
 
         lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
 
         if not lookup:
-            self._add_record("bump", [("guild_id", self.guild_id), ("base64", "'e30='")])
-            lookup = self.guild_id, "e30=", None
+            self._add_record("bump", [("guild_id", self.guild_id), ("base64", "'e30='"), ("streak_base64", "'e30='")])
+            lookup = self.guild_id, "e30=", None, "e30="
         else:
             lookup = lookup[0]
 
-        return json.loads(Storage(lookup[1]).un_base64()), lookup[2]
+        # Error correction
+        if lookup[1] is None:
+            lookup = lookup[0], "e30=", lookup[2], lookup[3]
+
+        # Error correction
+        if lookup[3] is None:
+            lookup = lookup[0], lookup[1], lookup[2], "e30="
+
+        return json.loads(Storage(lookup[1]).un_base64()), lookup[2], json.loads(Storage(lookup[3]).un_base64())
 
     def _commit(self):
         """ Commits a change to the database """
-        self._update_record("bump", [("base64", functions.quotify(Storage(json.dumps(self.bumpDict)).do_base64())),
-                                     ("first_bump_id", self.first_bump_id)], f"guild_id = {self.guild_id}")
+        self._update_record("bump", [
+                                        ("base64", functions.quotify(Storage(json.dumps(self.bumpDict)).do_base64())),
+                                        ("first_bump_id", self.first_bump_id),
+                                        ("streak_base64", functions.quotify(Storage(json.dumps(self.streak_data)).do_base64()))
+                                     ],
+                            f"guild_id = {self.guild_id}"
+                            )
 
     def get_top(self, num: int = 1, raw: bool = False):
         """ Gets the top {num} entries.
@@ -71,18 +89,35 @@ class Bump(Database):
         return top
 
     def get_pos(self):
+        """ Gets the position of the person on the leaderboard
+
+        :return: Integer of the person's position
+        """
         toplist = self.get_top(num=100000000)
         toplist = [int(listitem[0]) for listitem in toplist]
         return toplist.index(self.user_id)
 
     def get_total(self):
-        """ Gets the bump total """
+        """ Gets the bump total
+
+        :return: Integer of the person's bump total
+        """
         try:
             total = self.bumpDict[str(self.user_id)]
         except KeyError:
             total = 0
 
         return total
+
+    def get_streaker(self):
+        """ Gets the current person with a streak
+
+        :return: The current streaker's id, and their streak
+        """
+        cur_streaker = self.streak_data["cur_streak"]
+        cur_streaker_num = self.streak_data[cur_streaker]
+
+        return cur_streaker, cur_streaker_num
 
     def add_total(self, amount: int = 1):
         """ Adds {amount} to the total
@@ -92,11 +127,24 @@ class Bump(Database):
         if self.first_bump_id is None:
             self.first_bump_id = self.user_id
 
+        # Bump totals
+
         if str(self.user_id) in self.bumpDict:
             self.bumpDict[str(self.user_id)] += amount
         else:
             self.bumpDict[str(self.user_id)] = 0
             self.bumpDict[str(self.user_id)] += amount
+
+        # Streak
+        if "cur_streak" not in self.streak_data:
+            self.streak_data["cur_streak"] = ""
+
+        if self.streak_data["cur_streak"] == str(self.user_id):
+            self.streak_data[str(self.user_id)] += 1
+
+        else:
+            self.streak_data["cur_streak"] = str(self.user_id)
+            self.streak_data[str(self.user_id)] = 1
 
         self._commit()
 
