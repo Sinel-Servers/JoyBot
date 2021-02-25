@@ -105,10 +105,11 @@ class Bump(commands.Cog):
             value = config["BUMP_FUNNIES"][value][1]
             if value.startswith("!"):
                 value = await string_pop(value, 0)
+                normal_badges += f":{value}: "
             else:
                 badgeid = config["EMOJI_IDS"][value]
-                value = f"<:{value}:{badgeid}>"
-            normal_badges += f":{value}: "
+                normal_badges += f"<:{value}:{badgeid}>"
+
 
         if normal_badges:
             embed.add_field(name="Normal Badges", value=normal_badges, inline=False)
