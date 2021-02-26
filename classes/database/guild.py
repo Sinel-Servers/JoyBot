@@ -95,7 +95,10 @@ class Bump(Database):
         """
         toplist = self.get_top(num=100000000)
         toplist = [int(listitem[0]) for listitem in toplist]
-        return toplist.index(self.user_id)
+        try:
+            return toplist.index(self.user_id)
+        except ValueError:
+            return None
 
     def get_total(self):
         """ Gets the bump total
@@ -109,15 +112,22 @@ class Bump(Database):
 
         return total
 
+    def get_streak(self):
+        """ Gets the current person's streak data
+
+        :return: The current person's streak data
+        """
+        return self.streak_data[str(self.user_id)]
+
     def get_streaker(self):
         """ Gets the current person with a streak
 
-        :return: The current streaker's id, and their streak
+        :return: The current streaker's id, and their streak data
         """
         cur_streaker = self.streak_data["cur_streak"]
-        cur_streaker_num = self.streak_data[cur_streaker]
+        cur_streaker_data = self.streak_data[cur_streaker]
 
-        return cur_streaker, cur_streaker_num
+        return cur_streaker, cur_streaker_data
 
     def add_total(self, amount: int = 1):
         """ Adds {amount} to the total
@@ -145,6 +155,10 @@ class Bump(Database):
                 self.streak_data[str(self.user_id)][1] = self.streak_data[str(self.user_id)][0]
 
         else:
+            prev_streaker = self.streak_data["cur_streak"]
+            prev_streaker_data = self.streak_data[prev_streaker]
+            self.streak_data[prev_streaker] = (0, prev_streaker_data[1])
+
             self.streak_data["cur_streak"] = str(self.user_id)
             self.streak_data[str(self.user_id)] = (1, 1)
 

@@ -28,7 +28,6 @@ from classes.database.guild import Bump as Bmp
 from classes.get_id import get_id
 from config import config
 
-
 # ---------------------------------Code------------------------------------ #
 
 
@@ -80,8 +79,18 @@ class Bump(commands.Cog):
 
         embed = discord.Embed(
                 title=f"`{person}`'s bump stats",
-                description=f"Bump total: `{bump.get_total()}` (`{bump.get_pos()}` on the leaderboard)"
+                description="\u200e"
             )
+
+        if bump.get_pos is None:
+            embed.add_field(name="Bump Stats", value="This person has not bumped this discord server yet!")
+        else:
+            embed.add_field(name="Bump Stats",
+                            value=f"Bump total: `{bump.get_total()}\n`"
+                                  f"Bump position: `{bump.get_pos()}`\n"
+                                  f"Current streak: `{bump.get_streaker()[0]}`\n"
+                                  f"Highest streak: `{bump.get_streaker()[1]}`\n"
+                            )
 
         special_badges = ""
 
@@ -110,7 +119,6 @@ class Bump(commands.Cog):
                 badgeid = config["EMOJI_IDS"][value]
                 normal_badges += f"<:{value}:{badgeid}>"
 
-
         if normal_badges:
             embed.add_field(name="Normal Badges", value=normal_badges, inline=False)
 
@@ -119,6 +127,7 @@ class Bump(commands.Cog):
         if event_badges:
             embed.add_field(name="Event Badges", value=event_badges, inline=False)
 
+        embed.set_image(url=person.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -182,6 +191,8 @@ class Bump(commands.Cog):
                 description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
             )
         top.add_field(name="Leaderboard", value=printstring, inline=False)
+        top.set_image(url=ctx.guild.icon_url)
+
         await message.edit(embed=top, content="\u200e")
 
     @commands.command()
