@@ -82,7 +82,7 @@ class Bump(commands.Cog):
                 description="\u200e"
             )
 
-        if bump.get_pos is None:
+        if bump.get_pos() is None:
             embed.add_field(name="Bump Stats", value="This person has not bumped this discord server yet!")
         else:
             embed.add_field(name="Bump Stats",
