@@ -117,6 +117,9 @@ class Bump(Database):
 
         :return: The current person's streak data
         """
+        if str(self.user_id) in self.streak_data:
+            return self.streak_data[str(self.user_id)]
+        self.streak_data[str(self.user_id)] = (0, 0)
         return self.streak_data[str(self.user_id)]
 
     def get_streaker(self):
