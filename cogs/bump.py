@@ -88,8 +88,8 @@ class Bump(commands.Cog):
             embed.add_field(name="Bump Stats",
                             value=f"Bump total: `{bump.get_total()}\n`"
                                   f"Bump position: `{bump.get_pos()}`\n"
-                                  f"Current streak: `{bump.get_streaker()[0]}`\n"
-                                  f"Highest streak: `{bump.get_streaker()[1]}`\n"
+                                  f"Current streak: `{bump.get_streak()[0]}`\n"
+                                  f"Highest streak: `{bump.get_streak()[1]}`\n"
                             )
 
         special_badges = ""
@@ -99,7 +99,7 @@ class Bump(commands.Cog):
             badgeid = config["EMOJI_IDS"][badgename]
             special_badges += f"<:{badgename}:{badgeid}>"
 
-        pos = bump.get_pos()+1
+        pos = bump.get_pos()
         if pos in range(1, 4):
             badgename = f"badge_{pos}_place"
             badgeid = config["EMOJI_IDS"][badgename]

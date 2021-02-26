@@ -96,7 +96,7 @@ class Bump(Database):
         toplist = self.get_top(num=100000000)
         toplist = [int(listitem[0]) for listitem in toplist]
         try:
-            return toplist.index(self.user_id)
+            return toplist.index(self.user_id)+1
         except ValueError:
             return None
 
