@@ -127,7 +127,7 @@ class Bump(commands.Cog):
         if event_badges:
             embed.add_field(name="Event Badges", value=event_badges, inline=False)
 
-        embed.set_image(url=person.avatar_url)
+        embed.set_thumbnail(url=person.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -191,7 +191,7 @@ class Bump(commands.Cog):
                 description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
             )
         top.add_field(name="Leaderboard", value=printstring, inline=False)
-        top.set_image(url=ctx.guild.icon_url)
+        top.set_thumbnail(url=ctx.guild.icon_url)
 
         await message.edit(embed=top, content="\u200e")
 
