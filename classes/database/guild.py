@@ -20,7 +20,6 @@ import json
 from ast import literal_eval
 from config import config
 from sqlite3 import OperationalError, IntegrityError
-import asyncio
 
 import functions
 from classes.database import Database
@@ -94,7 +93,11 @@ class Bump(Database):
         :return: Integer of the person's position
         """
         toplist = self.get_top(num=100000000)
-        toplist = [int(listitem[0]) for listitem in toplist]
+        try:
+            toplist = [int(listitem[0]) for listitem in toplist]
+        except TypeError:
+            return None
+
         try:
             return toplist.index(self.user_id)+1
         except ValueError:
@@ -119,6 +122,7 @@ class Bump(Database):
         """
         if str(self.user_id) in self.streak_data:
             return self.streak_data[str(self.user_id)]
+
         self.streak_data[str(self.user_id)] = (0, 0)
         return self.streak_data[str(self.user_id)]
 
@@ -159,8 +163,11 @@ class Bump(Database):
 
         else:
             prev_streaker = self.streak_data["cur_streak"]
-            prev_streaker_data = self.streak_data[prev_streaker]
-            self.streak_data[prev_streaker] = (0, prev_streaker_data[1])
+            try:
+                prev_streaker_data = self.streak_data[prev_streaker]
+                self.streak_data[prev_streaker] = (0, prev_streaker_data[1])
+            except KeyError:
+                pass
 
             self.streak_data["cur_streak"] = str(self.user_id)
             self.streak_data[str(self.user_id)] = (1, 1)

@@ -118,7 +118,7 @@ class Pictures(commands.Cog):
             await ctx.send("Bots don't have pictures!")
             return
 
-        Pic(ctx.guild.id, ctx.author.id).add_picture(valid_url)
+        Pic(ctx.guild.id, member.id).add_picture(valid_url)
         await ctx.send("Added picture successfully!")
 
     @commands.command()
