@@ -54,6 +54,8 @@ class Relationship(commands.Cog):
         e = discord.Embed(title=f"{ctx.author.mention} has kissed {person.mention}", description="\u200e")
         e.set_image(url=url)
 
+        print(url)
+
         await ctx.send("\u200e", embed=e)
 
     @commands.command()
@@ -79,6 +81,8 @@ class Relationship(commands.Cog):
 
         e = discord.Embed(title=f"{ctx.author.mention} has hugged {person.mention}", description="\u200e")
         e.set_image(url=url)
+
+        print(url)
 
         await ctx.send("\u200e", embed=e)
 
