@@ -59,6 +59,36 @@ async def on_message(message):
     if Counting(message.guild.id).channel_get_id() == message.channel.id:
         return
 
+    # Check all permissions
+    missing_perms = ""
+
+    permissions_list = [
+        "send_messages",
+        "read_messages",
+        "manage_messages",
+        "embed_links",
+        "attach_files",
+        "read_message_history",
+        "add_reactions",
+        "use_external_emojis"
+    ]
+
+    for perm in permissions_list:
+        exec(f"if not message.guild.me.permissions_in(message.channel).{perm}:\n\tmissing_perms = '{perm}'", globals())
+
+    if missing_perms:
+        perms_formatted = ""
+        for perm in missing_perms:
+            perms_formatted = f"• `{perm}`\n"
+
+        if "send_messages" in missing_perms:
+            await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+            return
+
+        await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+        return
+
+    # All permissions good
     await bot.process_commands(message)
 
 
