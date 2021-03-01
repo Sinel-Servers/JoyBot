@@ -51,7 +51,7 @@ class Relationship(commands.Cog):
             if url.endswith("\n"):
                 url = await string_pop(url, -1)
 
-        e = discord.Embed(title=f"{ctx.author.mention} has kissed {person.mention}", description="\u200e")
+        e = discord.Embed(title=f"{ctx.author} has kissed {person}", description="\u200e")
         e.set_image(url=url)
 
         await ctx.send("\u200e", embed=e)
@@ -77,7 +77,7 @@ class Relationship(commands.Cog):
             if url.endswith("\n"):
                 url = await string_pop(url, -1)
 
-        e = discord.Embed(title=f"{ctx.author.mention} has hugged {person.mention}", description="\u200e")
+        e = discord.Embed(title=f"{ctx.author} has hugged {person}", description="\u200e")
         e.set_image(url=url)
 
         await ctx.send("\u200e", embed=e)
