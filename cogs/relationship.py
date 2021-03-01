@@ -49,12 +49,10 @@ class Relationship(commands.Cog):
         with open("kiss.txt", "r") as fp:
             url = choice(fp.readlines())
             if url.endswith("\n"):
-                url = string_pop(url, -1)
+                url = await string_pop(url, -1)
 
         e = discord.Embed(title=f"{ctx.author.mention} has kissed {person.mention}", description="\u200e")
         e.set_image(url=url)
-
-        print(url)
 
         await ctx.send("\u200e", embed=e)
 
@@ -77,12 +75,10 @@ class Relationship(commands.Cog):
         with open("hug.txt", "r") as fp:
             url = choice(fp.readlines())
             if url.endswith("\n"):
-                url = string_pop(url, -1)
+                url = await string_pop(url, -1)
 
         e = discord.Embed(title=f"{ctx.author.mention} has hugged {person.mention}", description="\u200e")
         e.set_image(url=url)
-
-        print(url)
 
         await ctx.send("\u200e", embed=e)
 
