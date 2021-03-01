@@ -30,7 +30,7 @@
 
 from os import listdir, name, system, environ
 from discord import AllowedMentions
-from discord.ext.commands import Bot
+from discord.ext import commands
 from config import config
 from functions import determine_prefix
 from classes.database.guild import Counting, Ban
@@ -42,7 +42,7 @@ if name == "nt":
 # -----------------------Set up Variables--------------------- #
 
 # Set up the bot object
-bot = Bot(command_prefix=determine_prefix, allowed_mentions=AllowedMentions(roles=False, everyone=False))
+bot = commands.Bot(command_prefix=determine_prefix, allowed_mentions=AllowedMentions(roles=False, everyone=False))
 
 # Remove the help command, as we have our own custom one
 bot.remove_command("help")

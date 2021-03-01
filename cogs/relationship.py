@@ -18,9 +18,10 @@
 
 
 import discord
+from random import choice
 from discord.ext import commands
 from config import config
-
+from functions import string_pop
 
 # ---------------------------------Code------------------------------------ #
 
@@ -31,8 +32,6 @@ class Relationship(commands.Cog):
 
     @commands.command()
     async def kiss(self, ctx, person: discord.Member = None):
-        await ctx.send("This command is disabled right now, pending an update to the hugs database. Sorry!")
-        return
 
         if person is None:
             await ctx.send("I need to know who you are kissing!")
@@ -47,15 +46,18 @@ class Relationship(commands.Cog):
             await ctx.send("You can't kiss a bot, you'll get stuck to it! (we have no hearts, so we're very cold)")
             return
 
-        #gif_choice = await random_gif("kisses")  # TODO: convert to storing URL
-        #fileName = f"./data/bot/pics/{gif_choice}"
-        with open(fileName, 'rb') as fp:
-            await ctx.send(f"{ctx.author.mention} has kissed {person.mention}", file=discord.File(fp, fileName))
+        with open("kiss.txt", "r") as fp:
+            url = choice(fp.readlines())
+            if url.endswith("\n"):
+                url = string_pop(url, -1)
+
+        e = discord.Embed(title=f"{ctx.author.mention} has kissed {person.mention}", description="\u200e")
+        e.set_image(url=url)
+
+        await ctx.send("\u200e", embed=e)
 
     @commands.command()
     async def hug(self, ctx, person: discord.Member = None):
-        await ctx.send("This command is disabled right now, pending an update to the hugs database. Sorry!")
-        return
 
         if person is None:
             await ctx.send("I need to know who you are hugging!")
@@ -70,10 +72,15 @@ class Relationship(commands.Cog):
             await ctx.send("You can't hug a bot, you'll get stuck to it! (we have no hearts, so we're very cold)")
             return
 
-        #gif_choice = await random_gif("hugs")  # TODO: convert to storing URL
-        #fileName = f"./data/bot/pics/{gif_choice}"
-        with open(fileName, 'rb') as fp:
-            await ctx.send(f"{ctx.author.mention} has hugged {person.mention}", file=discord.File(fp, fileName))
+        with open("hug.txt", "r") as fp:
+            url = choice(fp.readlines())
+            if url.endswith("\n"):
+                url = string_pop(url, -1)
+
+        e = discord.Embed(title=f"{ctx.author.mention} has hugged {person.mention}", description="\u200e")
+        e.set_image(url=url)
+
+        await ctx.send("\u200e", embed=e)
 
 
 def setup(bot):
