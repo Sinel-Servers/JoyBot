@@ -73,10 +73,9 @@ async def on_message(message):
         "use_external_emojis"
     ]
 
-
     for perm in permissions_list:
         p = message.guild.me.permissions_in(message.channel)
-        exec(f"if not p.{perm}:\n\tmissing_perms = '{perm}'", globals())
+        exec(f"if not p.{perm}:\n\tmissing_perms = '{perm}'", locals())
 
     if missing_perms:
         perms_formatted = ""
