@@ -41,7 +41,7 @@ class Other(commands.Cog):
         await ctx.send(text)
 
     @commands.command()
-    async def reversecaps(self, ctx: commands.Context, *, text = None):
+    async def reversecaps(self, ctx: commands.Context, *, text: str = None):
         if text is None:
             await ctx.send(f"{ctx.author.mention}, please suppy an argument to reversecaps!")
             return
@@ -127,7 +127,7 @@ class Other(commands.Cog):
         if guild_id is None:
             await ctx.send(f"Please use this command with a guild id!\nExample: `{await determine_prefix(self.bot, ctx, True)}guildban 753463761704321034`")
             return
-        elif re.match(r"[0-9]{18}?", guild_id) is None:
+        elif re.match(r"[0-9]{18}?", str(guild_id)) is None:
             await ctx.send("That's not a valid guild!")
             return
 
