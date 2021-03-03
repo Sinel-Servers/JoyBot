@@ -24,7 +24,7 @@ class Storage:
         self.text = text
 
     def do_base64(self):
-        self.text = base64.b64encode(bytes(self.text, "utf-8")).decode("utf-8")  # noqa
+        self.text = base64.b64encode(bytes(self.text, "utf-8")).decode("utf-8")
         return self.text
 
     def un_base64(self):
