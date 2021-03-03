@@ -67,12 +67,12 @@ async def on_message(message: Message):
     if not starts_with_prefix:
         return
 
-    b = Bypass(message.guild.id)
+    #b = Bypass(message.guild.id)
 
     is_pb_command = any([message.content.startswith(prefix + "pb") for prefix in await determine_prefix(bot, message)])
     if is_pb_command:
         if message.author.permissions_in(message.channel).manage_guild:
-            await message.channel.send(f"Changed bypass status to `{b.change()}`")
+            #await message.channel.send(f"Changed bypass status to `{b.change()}`")
             return
 
     # Check all permissions
@@ -93,7 +93,7 @@ async def on_message(message: Message):
     for perm in permissions_list:
         exec(f"if not p.{perm}:\n\tmissing_perms.append('{perm}')", locals())
 
-    if not b.is_bypassed:
+    #if not b.is_bypassed:
         if missing_perms:
             if not message.author.permissions_in(message.channel).manage_guild:
                 return
@@ -112,8 +112,8 @@ async def on_message(message: Message):
             return
 
     # All permissions good
-    if b.is_bypassed:
-        b.change()
+    #if b.is_bypassed:
+        #b.change()
     await bot.process_commands(message)
 
 
