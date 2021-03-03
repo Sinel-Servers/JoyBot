@@ -84,7 +84,7 @@ async def on_message(message: Message):
     if missing_perms:
         perms_formatted = ""
         for perm in missing_perms:
-            perms_formatted = f"• `{perm}`\n"
+            perms_formatted += f"• `{perm}`\n"
 
         # Commented out because discord.bots.gg doesn't like it dming their admins.
         # Possibly add a .pbypass command to ignore the missing permissions and try to run commands
