@@ -20,7 +20,6 @@ import json
 from ast import literal_eval
 from config import config
 from sqlite3 import OperationalError, IntegrityError
-
 import functions
 from classes.database import Database
 from classes.storage import Storage
@@ -480,3 +479,33 @@ class Ban(Database):
     def unban(self):
         """ Unbans a guild """
         self._delete_record("guild_bans", f"guild_id = {self.guild_id}")
+
+
+class Bypass(Database):
+    """ High-level management of joybot permissions bypass databse """
+    def __init__(self, guild_id: int):
+        super().__init__("joybot_main")
+        self.guild_id = guild_id
+        self.is_bypassed = self.check_bypass()
+
+        if not self._table_exists("perm_bypass"):
+            self._make_table("perm_bypass", [("guild_id", "INTEGER PRIMARY KEY")])
+
+    def check_bypass(self):
+        """ Checks if a guild's permission message is bypassed or not """
+        rec = self._lookup_record("perm_bypass", f"guild_id = {self.guild_id}")
+        if rec:
+            return rec[0] != 0
+        return False
+
+    def change(self):
+        """ Sets bypass state """
+        try:
+            self._add_record("perm_bypass", [("guild_id", self.guild_id)])
+            self.is_bypassed = True
+            return True
+
+        except IntegrityError:
+            self._delete_record("perm_bypass", f"guild_id = {self.guild_id}")
+            self.is_bypassed = False
+            return False

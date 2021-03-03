@@ -34,7 +34,7 @@ from discord.ext import commands
 from discord import Message, AllowedMentions
 from config import config
 from functions import determine_prefix
-from classes.database.guild import Counting, Ban
+from classes.database.guild import Counting, Ban, Bypass
 
 # Enable colors on windows
 if name == "nt":
@@ -63,6 +63,16 @@ async def on_message(message: Message):
     if message.author.bot:
         return
 
+    starts_with_prefix = any([message.content.startswith(prefix) for prefix in await determine_prefix(bot, message)])
+    if not starts_with_prefix:
+        return
+
+    b = Bypass(message.guild.id)
+
+    is_pb_command = any([message.content.startswith(prefix + "pb") for prefix in await determine_prefix(bot, message)])
+    if is_pb_command:
+        b.change()
+
     # Check all permissions
     missing_perms = []
 
@@ -81,27 +91,27 @@ async def on_message(message: Message):
     for perm in permissions_list:
         exec(f"if not p.{perm}:\n\tmissing_perms.append('{perm}')", locals())
 
-    if missing_perms:
-        perms_formatted = ""
-        for perm in missing_perms:
-            perms_formatted += f"• `{perm}`\n"
+    if not b.is_bypassed:
+        if missing_perms:
+            if not message.author.permissions_in(message.channel).manage_guild:
+                return
 
-        if "send_messages" not in missing_perms:
-            if message.author.permissions_in(message.channel).manage_guild:
+            perms_formatted = [f"• `{perm}`\n" for perm in missing_perms]
+
+            if "send_messages" not in missing_perms:
                 try:
-                    await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+                    await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command to bypass and ignore this message.")
                 except Forbidden:
                     pass
-                return
-    #        Commented out because discord.bots.gg doesn't like it dming their admins.
-    #        Possibly add a .pbypass command to ignore the missing permissions and try to run commands
-    #        anyway, and use it in their server
-    #    else:
-    #       if message.author.permissions_in(message.channel).manage_guild:
-    #           await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
-    #           return
+
+            else:
+                await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command in your server to bypass and ignore this message.")
+
+            return
 
     # All permissions good
+    if b.is_bypassed:
+        b.change()
     await bot.process_commands(message)
 
 
