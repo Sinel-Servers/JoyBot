@@ -19,6 +19,7 @@
 
 from discord.ext import commands
 
+from subprocess import check_output
 import discordlists
 
 
