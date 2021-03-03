@@ -75,7 +75,7 @@ async def on_message(message):
 
     for perm in permissions_list:
         p = message.guild.me.permissions_in(message.channel)
-        exec(f"if not p.{perm}:\n\tmissing_perms = '{perm}'", locals())
+        exec(f"if not p.{perm}:\n\tmissing_perms.append('{perm}')", locals())
 
     if missing_perms:
         perms_formatted = ""
@@ -83,8 +83,9 @@ async def on_message(message):
             perms_formatted = f"• `{perm}`\n"
 
         if "send_messages" in missing_perms:
-            await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
-            return
+            if message.author.permissions_in(message.channel).manage_server:
+                await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+                return
 
         await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
         return
