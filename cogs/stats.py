@@ -64,6 +64,26 @@ class DiscordListsPost(commands.Cog):
                                                                              len(result["success"].keys()),
                                                                              len(result["failure"].keys())))
 
+    @commands.command()
+    async def stats(self, ctx: commands.Context):
+        cpuusage = [area for area in check_output(["mpstat"]).decode("utf-8").split("\n")[3].split(" ") if area]
+        cpuusage = str(cpuusage[2]) + "%"
+
+        memusage = [area for area in check_output(["free"]).decode("utf-8").split("\n")[1].split(" ") if area]
+        memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
+        memusage_total = str(round(int(memusage[1]) / (1000 * 1000), 2))
+        memusage_usage = str(float(memusage_total) - float(memusage_free))
+
+        e = Embed()
+        e.set_thumbnail(url=self.bot.user.avatar_url)
+        e.title = "Stats for JoyBot"
+        e.description = "These are the stats for JoyBot"
+        e.add_field(name="Memory", value=f"Total: {memusage_total}GB\nUsage: {memusage_usage}\nFree: {memusage_free}")
+        e.add_field(name="CPU", value=f"Usage: {cpuusage}")
+        e.add_field(name="Guilds", value=f"Guilds: {len(self.bot.guilds)}\nShards: {self.bot.shard_count}\nPing: {self.bot.latency}ms")
+
+        await ctx.send("\u200e", embed=e)
+
 
 def setup(bot):
     bot.add_cog(DiscordListsPost(bot))
