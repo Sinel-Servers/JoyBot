@@ -19,19 +19,20 @@
 
 from decimal import Decimal
 from operator import itemgetter
-import discord
-
-from classes.database.guild import Settings, Pictures
+from discord.ext.commands import Context
+from discord import Message
+from typing import Union
+from classes.database.guild import Settings
 from config import config
 
 
 # --------------------------------Functions--------------------------------#
 
-def quotify(text):
+def quotify(text: str):
     return "'" + text + "'"
 
 
-async def inch_cm(convert):
+async def inch_cm(convert: Union[str, int]):
     # CM
     try:
         if convert.isnumeric():
@@ -86,11 +87,11 @@ async def string_pop(string: str, topop: int):
     return "".join(string)
 
 
-async def split_even(string):
+async def split_even(string: str):
     return string[:len(string) // 2], string[len(string) // 2:]
 
 
-async def text_pretty(text, spacegoal=config["HELP_NAME_LIMIT"]):
+async def text_pretty(text: str, spacegoal: int = config["HELP_NAME_LIMIT"]):
     if len(text) > spacegoal - 1:
         return f"OVER {config['SPACEGOAL']}: CONTACT THE DEV"
 
@@ -99,12 +100,12 @@ async def text_pretty(text, spacegoal=config["HELP_NAME_LIMIT"]):
     return text
 
 
-async def function_backwords(text):
+async def function_backwords(text: str):
     return text[::-1]
 
 
 # Prints a person and their total pictures nicely.
-async def text_pretty_mid_end(starttext, endtext, mid=config["CMD_HELP"]["MID"], spacegoal=config["SPACEGOAL"], txtp=20):
+async def text_pretty_mid_end(starttext: str, endtext: str, mid: str = config["CMD_HELP"]["MID"], spacegoal: int = config["SPACEGOAL"], txtp: int = 20):
     if len(starttext) > spacegoal - 1:
         return f"OVER {config['SPACEGOAL']}: CONTACT THE DEV"
 
@@ -119,7 +120,7 @@ async def text_pretty_mid_end(starttext, endtext, mid=config["CMD_HELP"]["MID"],
     return f"{starttext}{spaces1}{mid}{spaces2}{endtext}"
 
 
-def sort_dict(dictionary, num=10000000000000000, return_type="full"):
+def sort_dict(dictionary: dict, num: int = 10000000000000000, return_type: str = "full"):
     topx = {k: v for k, v in sorted(dictionary.items(), key=itemgetter(1), reverse=True)[:num]}
 
     return_list = []
@@ -141,9 +142,9 @@ def sort_dict(dictionary, num=10000000000000000, return_type="full"):
         raise TypeError
 
 
-async def determine_prefix(bot, ctx, raw: bool = False):
+# noinspection PyUnusedLocal
+async def determine_prefix(bot, ctx: Union[Context, Message], raw: bool = False):
     settings = Settings(ctx.guild.id)
     if raw:
         return settings.get_setting("prefix")
     return settings.get_setting("prefix"), f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "
-
