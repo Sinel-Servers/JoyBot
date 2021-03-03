@@ -79,9 +79,9 @@ class DiscordListsPost(commands.Cog):
         e.set_thumbnail(url=self.bot.user.avatar_url)
         e.title = "Stats for JoyBot"
         e.description = "These are the stats for JoyBot"
-        e.add_field(name="Memory", value=f"Total: {memusage_total}GB\nUsage: {memusage_usage}\nFree: {memusage_free}")
-        e.add_field(name="CPU", value=f"Usage: {cpuusage}")
-        e.add_field(name="Guilds", value=f"Guilds: {len(self.bot.guilds)}\nShards: {self.bot.shard_count}\nPing: {self.bot.latency}ms")
+        e.add_field(name="Memory", value=f"Total: `{memusage_total}GB`\nUsage: `{memusage_usage}GB`\nFree: `{memusage_free}GB`", inline=False)
+        e.add_field(name="CPU", value=f"Usage: {cpuusage}", inline=False)
+        e.add_field(name="Guilds", value=f"Guilds: `{len(self.bot.guilds)}`\nShards: `{self.bot.shard_count}`\nPing: `{round(self.bot.latency * 1000)}ms`", inline=False)
 
         await ctx.send("\u200e", embed=e)
 
