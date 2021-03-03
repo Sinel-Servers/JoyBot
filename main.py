@@ -60,7 +60,7 @@ async def on_message(message):
         return
 
     # Check all permissions
-    missing_perms = ""
+    missing_perms = []
 
     permissions_list = [
         "send_messages",
