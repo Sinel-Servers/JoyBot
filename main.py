@@ -71,9 +71,11 @@ async def on_message(message: Message):
 
     is_pb_command = any([message.content.startswith(prefix + "pb") for prefix in await determine_prefix(bot, message)])
     if is_pb_command:
-        if message.author.permissions_in(message.channel).manage_guild:
+        if message.author.permissions_in(message.channel).manage_guild or message.author.id in config["SUPERADMINIDS"]:
             await message.channel.send(f"Changed bypass status to `{b.change()}`")
-            return
+        else:
+            await message.channel.send("You can't use this command!")
+        return
 
     # Check all permissions
     missing_perms = []
