@@ -29,9 +29,9 @@
 # ---------------------------------Code------------------------------------ #
 
 from os import listdir, name, system, environ
-from discord import AllowedMentions
+from discord.errors import Forbidden
 from discord.ext import commands
-from discord import Message
+from discord import Message, AllowedMentions
 from config import config
 from functions import determine_prefix
 from classes.database.guild import Counting, Ban
@@ -88,7 +88,10 @@ async def on_message(message: Message):
 
         if "send_messages" not in missing_perms:
             if message.author.permissions_in(message.channel).manage_guild:
-                await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+                try:
+                    await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+                except Forbidden:
+                    pass
                 return
     #        Commented out because discord.bots.gg doesn't like it dming their admins.
     #        Possibly add a .pbypass command to ignore the missing permissions and try to run commands
