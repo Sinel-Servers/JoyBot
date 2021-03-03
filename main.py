@@ -97,7 +97,7 @@ async def on_message(message: Message):
 
     if not b.is_bypassed:
         if missing_perms:
-            if not message.author.permissions_in(message.channel).manage_guild:
+            if not message.author.permissions_in(message.channel).manage_guild or message.author.id in config["SUPERADMINIDS"]:
                 return
 
             perms_formatted = [f"• `{perm}`\n" for perm in missing_perms]
