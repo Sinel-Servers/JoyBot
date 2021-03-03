@@ -87,11 +87,11 @@ async def on_message(message: Message):
             perms_formatted = f"• `{perm}`\n"
 
         if "send_messages" in missing_perms:
-            if message.author.permissions_in(message.channel).manage_server:
+            if message.author.permissions_in(message.channel).manage_guild:
                 await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
                 return
 
-        elif message.author.permissions_in(message.channel).manage_server:
+        elif message.author.permissions_in(message.channel).manage_guild:
             await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
             return
 
