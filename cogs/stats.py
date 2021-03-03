@@ -68,7 +68,7 @@ class DiscordListsPost(commands.Cog):
     @commands.command()
     async def stats(self, ctx: commands.Context):
         cpuusage = [area for area in check_output(["mpstat"]).decode("utf-8").split("\n")[3].split(" ") if area]
-        cpuusage = str(cpuusage[2]) + "%"
+        cpuusage = str(cpuusage[2])
 
         memusage = [area for area in check_output(["free"]).decode("utf-8").split("\n")[1].split(" ") if area]
         memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
@@ -80,7 +80,7 @@ class DiscordListsPost(commands.Cog):
         e.title = "Stats for JoyBot"
         e.description = "These are the stats for JoyBot"
         e.add_field(name="Memory", value=f"Total: `{memusage_total}GB`\nUsage: `{memusage_usage}GB`\nFree: `{memusage_free}GB`", inline=False)
-        e.add_field(name="CPU", value=f"Usage: {cpuusage}", inline=False)
+        e.add_field(name="CPU", value=f"Usage: `{cpuusage}%`", inline=False)
         e.add_field(name="Guilds", value=f"Guilds: `{len(self.bot.guilds)}`\nShards: `{self.bot.shard_count}`\nPing: `{round(self.bot.latency * 1000)}ms`", inline=False)
 
         await ctx.send("\u200e", embed=e)
