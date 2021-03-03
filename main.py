@@ -31,6 +31,7 @@
 from os import listdir, name, system, environ
 from discord import AllowedMentions
 from discord.ext import commands
+from discord import Message
 from config import config
 from functions import determine_prefix
 from classes.database.guild import Counting, Ban
@@ -49,7 +50,7 @@ bot.remove_command("help")
 
 
 @bot.event
-async def on_message(message):
+async def on_message(message: Message):
     try:
         if Ban(message.guild.id).is_banned():
             return
@@ -57,6 +58,9 @@ async def on_message(message):
         return
 
     if Counting(message.guild.id).channel_get_id() == message.channel.id:
+        return
+
+    if message.author.bot:
         return
 
     # Check all permissions
@@ -73,8 +77,8 @@ async def on_message(message):
         "use_external_emojis"
     ]
 
+    p = message.guild.me.permissions_in(message.channel)
     for perm in permissions_list:
-        p = message.guild.me.permissions_in(message.channel)
         exec(f"if not p.{perm}:\n\tmissing_perms.append('{perm}')", locals())
 
     if missing_perms:
@@ -87,8 +91,9 @@ async def on_message(message):
                 await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
                 return
 
-        await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
-        return
+        elif message.author.permissions_in(message.channel).manage_server:
+            await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!")
+            return
 
     # All permissions good
     await bot.process_commands(message)
