@@ -71,7 +71,8 @@ async def on_message(message: Message):
 
     is_pb_command = any([message.content.startswith(prefix + "pb") for prefix in await determine_prefix(bot, message)])
     if is_pb_command:
-        b.change()
+        await message.channel.send(f"Changed bypass status to `{b.change()}`")
+        return
 
     # Check all permissions
     missing_perms = []
