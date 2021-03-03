@@ -26,12 +26,12 @@ from classes.database.guild import Counting, Ban
 # ---------------------------------Code------------------------------------#
 
 class Count(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         bot.countDict = {}
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         try:
             if Ban(message.guild.id).is_banned():
                 return

@@ -31,7 +31,7 @@ class Relationship(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def kiss(self, ctx, person: discord.Member = None):
+    async def kiss(self, ctx: commands.Context, person: discord.Member = None):
 
         if person is None:
             await ctx.send("I need to know who you are kissing!")
@@ -57,7 +57,7 @@ class Relationship(commands.Cog):
         await ctx.send("\u200e", embed=e)
 
     @commands.command()
-    async def hug(self, ctx, person: discord.Member = None):
+    async def hug(self, ctx: commands.Context, person: discord.Member = None):
 
         if person is None:
             await ctx.send("I need to know who you are hugging!")

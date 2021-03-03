@@ -36,7 +36,7 @@ class Pictures(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def randompic(self, ctx, member: Union[discord.Member, str] = None):
+    async def randompic(self, ctx: commands.Context, member: Union[discord.Member, str] = None):
         pictures = Pic(ctx.guild.id)
         if not pictures.list():
             await ctx.send("This guild doesn't have any pictures, ask an admin to add some!")
@@ -82,7 +82,7 @@ class Pictures(commands.Cog):
         await ctx.send(embed=e)
 
     @commands.command()
-    async def addpic(self, ctx, member: discord.Member = None):
+    async def addpic(self, ctx: commands.Context, member: discord.Member = None):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("admins_list"):
             await ctx.send("You're not an admin!")
             return
@@ -122,7 +122,7 @@ class Pictures(commands.Cog):
         await ctx.send("Added picture successfully!")
 
     @commands.command()
-    async def delpic(self, ctx):
+    async def delpic(self, ctx: commands.Context):
         await ctx.send(f"Hi, unfortunately due to code corruption this command is gone! The team behind this are working hard to build it all from scratch, but for now you can join the support server (`{await determine_prefix(self.bot, ctx, True)}info`), and have someone remove any pictures manually.\n\nThanks for the understanding!")
 
 

@@ -27,11 +27,11 @@ from functions import string_pop
 
 
 class evalClass(commands.Cog):
-	def __init__(self, bot):
+	def __init__(self, bot: commands.Bot):
 		self.bot = bot
 
 	@commands.command(aliases=["eval"])
-	async def evaluate(self, ctx, awa: Optional[bool], *, code=None):
+	async def evaluate(self, ctx: commands.Context, awa: Optional[bool], *, code: str = None):
 		if ctx.author.id not in config["SUPERADMINIDS"]:
 			await ctx.send(f"{ctx.author.mention}, you can't use this command!")
 			return
@@ -52,7 +52,7 @@ class evalClass(commands.Cog):
 			await ctx.send(f"Exception: `{e.__class__.__name__}: {e}`")
 
 	@commands.command(aliases=["e", "exec"])
-	async def execute(self, ctx, awa: Optional[bool], *, code=None):
+	async def execute(self, ctx: commands.Context, awa: Optional[bool], *, code: str = None):
 		if ctx.author.id not in config["SUPERADMINIDS"]:
 			await ctx.send(f"{ctx.author.mention}, you can't use this command!")
 			return

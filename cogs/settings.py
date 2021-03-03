@@ -33,7 +33,7 @@ class Settings(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def listsettings(self, ctx):
+    async def listsettings(self, ctx: commands.Context):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
             await ctx.send("Hey, you can't use this command!")
             return
@@ -51,19 +51,19 @@ class Settings(commands.Cog):
         await ctx.send(f"Here are the settings:```\n{sendstring}```")
 
     @commands.command()
-    async def changesetting(self, ctx, setting, value=None):
+    async def changesetting(self, ctx: commands.Context, setting_name: str, setting_value=None):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
             await ctx.send("Hey, you can't use this command!")
             return
 
         settings = Sttngs(ctx.guild.id)
 
-        if setting == "admins_list":
-            if value is None:
+        if setting_name == "admins_list":
+            if setting_value is None:
                 await ctx.send("Please use this command with a mention!")
                 return
 
-            user = self.bot.get_user(await get_id().member(value))
+            user = self.bot.get_user(await get_id().member(setting_value))
             if user is None:
                 await ctx.send("Please use this command with a mention!")
                 return
@@ -81,7 +81,7 @@ class Settings(commands.Cog):
             await ctx.send(f"Added {user} to the admins list")
             return
 
-        elif setting == "global_randompic":
+        elif setting_name == "global_randompic":
             global_randompic = settings.get_setting("global_randompic")
             if global_randompic == "False":
                 settings.set_setting("global_randompic", "True")
@@ -92,7 +92,7 @@ class Settings(commands.Cog):
                 await ctx.send("Made randompic get pictures from the specified user")
                 return
 
-        elif setting == "global_addpic":
+        elif setting_name == "global_addpic":
             global_addpic = settings.get_setting("global_addpic")
             if global_addpic == "False":
                 settings.set_setting("global_addpic", "True")
@@ -103,11 +103,11 @@ class Settings(commands.Cog):
                 await ctx.send("Made addpic admins only")
                 return
 
-        elif setting == "counting_channel":
-            if value is None:
+        elif setting_name == "counting_channel":
+            if setting_value is None:
                 counting_channel = settings.get_setting("counting_channel")
                 if counting_channel is None:
-                    await ctx.send("The setting is already reset!")
+                    await ctx.send("The setting_name is already reset!")
                     return
 
                 counting = Counting(ctx.guild.id)
@@ -116,10 +116,10 @@ class Settings(commands.Cog):
                 settings.set_setting("counting_channel", "None")
                 channel = self.bot.get_channel(counting_channel)
                 await channel.send(f"The counting is over! You got to a total of `{curnum}`!\n——————————")
-                await ctx.send("Reset the counting channel setting!")
+                await ctx.send("Reset the counting channel setting_name!")
                 return
 
-            counting_channel = await get_id().channel(value)
+            counting_channel = await get_id().channel(setting_value)
             channel = self.bot.get_channel(counting_channel)
             if channel is None:
                 await ctx.send("That's not a valid channel in this guild!")
@@ -132,19 +132,19 @@ class Settings(commands.Cog):
             Counting(ctx.guild.id).channel_set(counting_channel)
             await ctx.send("Counting channel is set up!")
 
-        elif setting == "prefix":
+        elif setting_name == "prefix":
             if not ctx.author.guild_permissions.administrator or ctx.author.id not in config["SUPERADMINIDS"]:
                 pass
 
-            if value is None:
+            if setting_value is None:
                 await ctx.send("Please specify what the new prefix is!")
                 return
 
-            if len(value) > 10:
+            if len(setting_value) > 10:
                 await ctx.send("Please keep the prefix under 10 characters!")
                 return
 
-            settings.set_setting("prefix", value)
+            settings.set_setting("prefix", setting_value)
             await ctx.send("Successfully set the new prefix!")
 
         else:

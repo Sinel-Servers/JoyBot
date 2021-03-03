@@ -29,7 +29,7 @@ class polls(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["yesnovote"])
-    async def yesnopoll(self, ctx, *, question=None):
+    async def yesnopoll(self, ctx: commands.Context, *, question: str = None):
         if question is None:
             msg = await ctx.send(f"{ctx.author.mention}, Please supply arguments!\nExample:    `.numberpoll This is the question`")
             await msg.add_reaction(config["CHAR_CROSS"])
@@ -44,7 +44,7 @@ class polls(commands.Cog):
         Message(ctx.author.id, msg.id).add("delete")
 
     @commands.command(aliases=["numbervote"])
-    async def numberpoll(self, ctx, *, text=None):
+    async def numberpoll(self, ctx: commands.Context, *, text: str = None):
         await ctx.message.delete()
         if text is None:
             msg = await ctx.send(f"{ctx.author.mention}, Please supply arguments!\nExample:\t`.numberpoll This is the question, This is answer one, This is answer two, etc`")

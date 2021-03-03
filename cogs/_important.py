@@ -30,7 +30,7 @@ class _important(commands.Cog):
     #----------COGS------------#
 
     @commands.command()
-    async def cogload(self, ctx, extension=None):
+    async def cogload(self, ctx: commands.Context, extension: str = None):
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -52,7 +52,7 @@ class _important(commands.Cog):
         await ctx.send(f"The cog '{extension}' has been loaded!")
 
     @commands.command()
-    async def cogreload(self, ctx, extension=None):
+    async def cogreload(self, ctx: commands.Context, extension: str = None):
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -70,7 +70,7 @@ class _important(commands.Cog):
         await ctx.send(f"The cog '{extension}' has been reloaded!")
 
     @commands.command()
-    async def cogunload(self, ctx, extension=None):
+    async def cogunload(self, ctx: commands.Context, extension: str = None):
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -86,7 +86,7 @@ class _important(commands.Cog):
 
     #----MENTION HELP------#
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         try:
             if Ban(message.guild.id).is_banned():
                 return
@@ -108,7 +108,7 @@ class _important(commands.Cog):
 
     #-------------ON ERROR-----------#
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: commands.Context, error: commands.errors.CommandError):
         if isinstance(error, commands.errors.CommandNotFound):
             return
         elif isinstance(error, commands.errors.MissingRequiredArgument):
@@ -142,7 +142,7 @@ class _important(commands.Cog):
 
     #------ON JOIN/LEAVE---------#
     @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
+    async def on_guild_remove(self, guild: discord.Guild):
         if guild.name is None:
             return
 

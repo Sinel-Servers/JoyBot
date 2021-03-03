@@ -32,11 +32,11 @@ from config import config
 
 
 class Bump(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         try:
             if Ban(message.guild.id).is_banned():
                 return
@@ -71,7 +71,7 @@ class Bump(commands.Cog):
                     await message.channel.send(send_msg)
 
     @commands.command()
-    async def bumptotal(self, ctx, person: discord.Member = None):
+    async def bumptotal(self, ctx: commands.Context, person: discord.Member = None):
         if person is None:
             person = ctx.author
 
@@ -131,7 +131,7 @@ class Bump(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def topbumptotal(self, ctx):
+    async def topbumptotal(self, ctx: commands.Context):
         bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
             topbumps = bump.get_top(10)
@@ -196,7 +196,7 @@ class Bump(commands.Cog):
         await message.edit(embed=top, content="\u200e")
 
     @commands.command()
-    async def changebumptotal(self, ctx, person: discord.Member = None, amount: Union[int, str] = None):
+    async def changebumptotal(self, ctx: commands.Context, person: discord.Member = None, amount: Union[int, str] = None):
         if ctx.author.id not in config["SUPERADMINIDS"]:
             await ctx.send(f"{ctx.author.mention}, you can't use this command!")
             return
@@ -233,7 +233,7 @@ class Bump(commands.Cog):
             await ctx.send(f"Changed {person_name} bump total by {amount}")
 
     @commands.command()
-    async def resetbumptotal(self, ctx, person: Union[discord.Member, str]):
+    async def resetbumptotal(self, ctx: commands.Context, person: Union[discord.Member, str]):
         if ctx.author.id not in config["SUPERADMINIDS"] and ctx.author.id not in Settings(ctx.guild.id).get_setting("admins_list") and not ctx.author.guild_permissions.administrator:
             await ctx.send(f"{ctx.author.mention}, you can't use this command!")
             return

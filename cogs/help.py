@@ -31,11 +31,11 @@ class Help(commands.Cog):
 
     # Custom help command
     @commands.command()
-    async def help(self, ctx, req_cmd=None):
+    async def help(self, ctx: commands.Context, requested_command: str = None):
         sendstring = "```\n"
         try:
 
-            if req_cmd is None:
+            if requested_command is None:
                 # Add the everyone can use commands
                 sendstring += "Everyone:\n"
                 for command in config["CMD_HELP"]["EVERYONE"]:
@@ -84,22 +84,22 @@ class Help(commands.Cog):
 
                     for cat in cats:
                         for cmd in config["CMD_HELP"]["OTHERS"][cat]:
-                            if req_cmd == cmd:
+                            if requested_command == cmd:
                                 other_cat = cat
                             other_cmds.append(cmd)
                 else:
                     other_cmds = []
                     other_cat = ""
 
-                if req_cmd in list(config["CMD_HELP"]["EVERYONE"].keys()):
+                if requested_command in list(config["CMD_HELP"]["EVERYONE"].keys()):
                     group = "EVERYONE"
-                elif req_cmd in other_cmds:
+                elif requested_command in other_cmds:
                     group = "OTHERS"
-                elif req_cmd in list(config["CMD_HELP"]["ADMIN"].keys()):
+                elif requested_command in list(config["CMD_HELP"]["ADMIN"].keys()):
                     group = "ADMIN"
-                elif req_cmd in list(config["CMD_HELP"]["ADMINISTATOR"].keys()):
+                elif requested_command in list(config["CMD_HELP"]["ADMINISTATOR"].keys()):
                     group = "ADMINISTATOR"
-                elif req_cmd in list(config["CMD_HELP"]["SUPERADMIN"].keys()):
+                elif requested_command in list(config["CMD_HELP"]["SUPERADMIN"].keys()):
                     group = "SUPERADMIN"
                 else:
                     await ctx.send(
@@ -107,19 +107,19 @@ class Help(commands.Cog):
                     return
 
                 if group != "OTHERS":
-                    command = config["CMD_HELP"][group][req_cmd]
+                    command = config["CMD_HELP"][group][requested_command]
                 else:
 
-                    command = config["CMD_HELP"][group][other_cat][req_cmd]
+                    command = config["CMD_HELP"][group][other_cat][requested_command]
 
-                sendstring += f"{req_cmd}:\n\t{command['long_text']}\n\n"
+                sendstring += f"{requested_command}:\n\t{command['long_text']}\n\n"
 
                 if command['format']:
                     cmd_format = command['format']
                 else:
                     cmd_format = ""
 
-                sendstring += f"\tUsage: {await determine_prefix(self.bot, ctx, True)}{req_cmd}  {cmd_format}\n"
+                sendstring += f"\tUsage: {await determine_prefix(self.bot, ctx, True)}{requested_command}  {cmd_format}\n"
 
                 if command['aliases']:
                     aliaseslist = ""

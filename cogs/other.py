@@ -18,7 +18,7 @@
 
 import re
 from discord.ext import commands
-
+import discord
 from config import config
 from classes.database.message import Message
 from classes.exceptions import AlreadyBannedError, NoDataError
@@ -33,12 +33,15 @@ class Other(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def backwords(self, ctx, *, text):
+    async def backwords(self, ctx: commands.Context, *, text: str = None):
+        if text is None:
+            await ctx.send(f"{ctx.author.mention}, please suppy an argument to backwords!")
+            return
         text = f"{ctx.author.mention}, here's your backwords string: {text[::-1]}" if text != "" else f"{ctx.author.mention}, please provide something to return backwords!"
         await ctx.send(text)
 
     @commands.command()
-    async def reversecaps(self, ctx, *, text=None):
+    async def reversecaps(self, ctx: commands.Context, *, text = None):
         if text is None:
             await ctx.send(f"{ctx.author.mention}, please suppy an argument to reversecaps!")
             return
@@ -46,7 +49,7 @@ class Other(commands.Cog):
         await ctx.send(f"{ctx.author.mention}, here is your reversecaps:\n{text.swapcase()}")
 
     @commands.command()
-    async def convert(self, ctx, text=None):
+    async def convert(self, ctx: commands.Context, text: str = None):
         if text is None:
             await ctx.send(f"Please convert either:\nFeet'inches to CM `{await determine_prefix(self.bot, ctx, True)}"
                            f"convert 6'2`\nCM to Feet'inches `{await determine_prefix(self.bot, ctx, True)}convert 188"
@@ -60,13 +63,16 @@ class Other(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, that's not a valid conversion!")
 
     @commands.command()
-    async def spacify(self, ctx, *, text):
+    async def spacify(self, ctx: commands.Context, *, text: str = None):
+        if text is None:
+            await ctx.send(f"{ctx.author.mention}, please suppy an argument to spacify!")
+            return
         text = list(text)
         text = " ".join(text)
         await ctx.send(f"{ctx.author.mention}, here is your message:\n{text}")
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, reaction):
+    async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
         messagedb = Message(reaction.user_id, reaction.message_id)
         try:
             msgmod = messagedb.get()
@@ -114,7 +120,7 @@ class Other(commands.Cog):
             return
 
     @commands.command()
-    async def guildban(self, ctx, guild_id=None):
+    async def guildban(self, ctx: commands.Context, guild_id: int = None):
         if ctx.author.id not in config["SUPERADMINIDS"]:
             await ctx.send("You can't use this command!")
             return
@@ -125,15 +131,13 @@ class Other(commands.Cog):
             await ctx.send("That's not a valid guild!")
             return
 
-        guild_ids = []
-        for guild in self.bot.guilds:
-            guild_ids.append(guild.id)
+        guild_ids = [guild.id for guild in self.bot.guilds]
 
-        if int(guild_id) not in guild_ids:
+        if guild_id not in guild_ids:
             await ctx.send("I have no data on that guild!")
             return
 
-        guild = self.bot.get_guild(int(guild_id))
+        guild = self.bot.get_guild(guild_id)
         if guild is None:
             msg = await ctx.send("Seems this guild was deleted!\nWould you like to remove it's data?")
             Message(ctx.author.id, msg.id).add(("guild ban", msg.id, guild_id))
@@ -147,14 +151,14 @@ class Other(commands.Cog):
         await msg.add_reaction(config["CHAR_CROSS"])
 
     @commands.command()
-    async def invite(self, ctx):
+    async def invite(self, ctx: commands.Context):
         await ctx.send(f"""
-{ctx.author.mention}, here's an invite link to add JoyBot to your own server:
+Oh, you want to add me? That's nice, here's an invite link to add JoyBot to your own server:
 https://sinelservers.xyz/stuff-made/JoyBot/invite.php
         """)
 
     @commands.command()
-    async def info(self, ctx):
+    async def info(self, ctx: commands.Context):
         await ctx.send(f"""
 Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
 I like long walks on the beach and watching the sunset :)
@@ -168,14 +172,14 @@ Hope you enjoy using me!
         """)
 
     @commands.command()
-    async def privacy(self, ctx):
+    async def privacy(self, ctx: commands.Context):
         await ctx.send(f"""
 Hi, you're probably wondering what data we store on you, and that's okay! Everybody has a right to privacy. Check out our privacy policy here:
 https://sinelserve8rs.xyz/stuff-made/JoyBot/privacy.php
         """)
 
     @commands.command()
-    async def source(self, ctx):
+    async def source(self, ctx: commands.Context):
         await ctx.send("""
 Ah okay, so you're wondering how i look like? Well, that's fine, just don't shame me i'm a bit messy 🥺
 https://github.com/Sinel-Servers-Limited/JoyBot
