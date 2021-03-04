@@ -96,7 +96,7 @@ class _important(commands.Cog):
                 return
 
         if message.content != f"<@!{config['BOTID']}>" or message.content != f"<@{config['BOTID']}>":
-            print("r1", message.content)
+            print("r1","'" + message.content + "'")
             return
         if message.author.id == config["BOTID"]:
             print("r2")
