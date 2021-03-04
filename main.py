@@ -109,7 +109,7 @@ async def on_message(message: Message):
             if not message.author.permissions_in(message.channel).manage_guild or message.author.id in config["SUPERADMINIDS"]:
                 return
 
-            perms_formatted = [f"• `{perm}`\n" for perm in missing_perms]
+            perms_formatted = "".join([f"• `{perm}`\n" for perm in missing_perms])
 
             if "send_messages" not in missing_perms:
                 try:
@@ -123,7 +123,7 @@ async def on_message(message: Message):
             return
 
     # All permissions good
-    if b.is_bypassed:
+    if b.is_bypassed and not missing_perms:
         b.change()
     await bot.process_commands(message)
 
