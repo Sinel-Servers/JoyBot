@@ -96,12 +96,16 @@ class _important(commands.Cog):
                 return
 
         if message.content != f"<@!{config['BOTID']}>" or message.content != f"<@{config['BOTID']}>":
+            print("r1")
             return
         if message.author.id == config["BOTID"]:
+            print("r2")
             return
         if Counting(message.guild.id).channel_get_id() == message.channel.id:
+            print("r3")
             return
 
+        print("sending")
         await message.channel.send(f"My prefix here is `{await determine_prefix(self.bot, message, True)}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\n"
                                    f"Type `{await determine_prefix(self.bot, message, True)}help` to get a list of commands!\nType"
                                    f"`{await determine_prefix(self.bot, message, True)}info` to get some info about me and my creator!")
