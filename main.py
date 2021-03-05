@@ -43,7 +43,7 @@ if name == "nt":
 # -----------------------Set up Variables--------------------- #
 
 # Set up the bot object
-bot = commands.AutoShardedBot(command_prefix=determine_prefix, allowed_mentions=AllowedMentions(roles=False, everyone=False), shard_count=2)
+bot = commands.AutoShardedBot(command_prefix=determine_prefix, allowed_mentions=AllowedMentions(roles=False, everyone=False))
 
 # Remove the help command, as we have our own custom one
 bot.remove_command("help")

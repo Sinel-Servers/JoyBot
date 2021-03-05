@@ -29,7 +29,7 @@ from functions import inch_cm, determine_prefix
 
 
 class Other(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
@@ -153,37 +153,37 @@ class Other(commands.Cog):
     @commands.command()
     async def invite(self, ctx: commands.Context):
         await ctx.send(f"""
-Oh, you want to add me? That's nice, here's an invite link to add JoyBot to your own server:
-https://sinelservers.xyz/stuff-made/JoyBot/invite.php
+        Oh, you want to add me? That's nice, here's an invite link to add JoyBot to your own server:
+        https://sinelservers.xyz/stuff-made/JoyBot/invite.php
         """)
 
     @commands.command()
     async def info(self, ctx: commands.Context):
         await ctx.send(f"""
-Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
-I like long walks on the beach and watching the sunset :)
-
-If you ever need help, just use the `{await determine_prefix(self.bot, ctx, True)}help` command, and i'll answer any and all questions you have!
-If you've got a more serious problem with me, you can always visit my discord at https://sinelservers.xyz/discord.php where you can ask more in depth questions or report that there's something wrong with me
-You can also make suggestions which you'd like added (although keep in mind my creator is just one person and is busy with school and other life-related things)
-
-Hope you enjoy using me!
-- JoyBot
-        """)
+        Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
+        I like long walks on the beach and watching the sunset :)
+        
+        If you ever need help, just use the `{await determine_prefix(self.bot, ctx, True)}help` command, and i'll answer any and all questions you have!
+        If you've got a more serious problem with me, you can always visit my discord at https://sinelservers.xyz/discord.php where you can ask more in depth questions or report that there's something wrong with me
+        You can also make suggestions which you'd like added (although keep in mind my creator is just one person and is busy with school and other life-related things)
+        
+        Hope you enjoy using me!
+        - JoyBot
+        """.replace("    ", ""))
 
     @commands.command()
     async def privacy(self, ctx: commands.Context):
         await ctx.send(f"""
-Hi, you're probably wondering what data we store on you, and that's okay! Everybody has a right to privacy. Check out our privacy policy here:
-https://sinelserve8rs.xyz/stuff-made/JoyBot/privacy.php
-        """)
+        Hi, you're probably wondering what data we store on you, and that's okay! Everybody has a right to privacy. Check out our privacy policy here:
+        https://sinelservers.xyz/stuff-made/JoyBot/privacy.php
+        """.replace("    ", ""))
 
     @commands.command()
     async def source(self, ctx: commands.Context):
         await ctx.send("""
-Ah okay, so you're wondering how i look like? Well, that's fine, just don't shame me i'm a bit messy 🥺
-https://github.com/Sinel-Servers-Limited/JoyBot
-""")
+        Ah okay, so you're wondering how i look like? Well, that's fine, just don't shame me i'm a bit messy 🥺
+        https://github.com/Sinel-Servers-Limited/JoyBot
+        """.replace("    ", ""))
 
 
 def setup(bot):

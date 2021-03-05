@@ -32,7 +32,7 @@ from functions import determine_prefix, text_pretty_mid_end
 # ---------------------------------Code------------------------------------#
 
 class Pictures(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()

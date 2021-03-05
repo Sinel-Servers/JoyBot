@@ -26,7 +26,7 @@ from config import config
 # ---------------------------------Code------------------------------------#
 
 class Help(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     # Custom help command

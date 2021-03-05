@@ -26,17 +26,8 @@ config = {
     # Environment variable where discord token is
     "TOKENVAR": "DISCORD_JOYBOT_TOKEN",
 
-    # The ID of your bot
-    "BOTID": 504030703264989194,
-
-    # The permissions integer for your bot
-    "PERMINT": 1878916311,
-
     # Prefix for the bot
     "PREFIX": ".",
-
-    # Put your id here
-    "BOTOWNER": 246862123328733186,
 
     # The discord ids of all the super admins
     "SUPERADMINIDS": [
@@ -137,8 +128,6 @@ config = {
         "WHITE": "\033[1;37m"
     },
 
-    "ALLGIFS": ["hugs", "kisses", "marry"],
-
     # Disboard ID, doesn't need to be changed
     "DISBOARDID": 302050872383242240,
 
@@ -154,11 +143,11 @@ config = {
     # Template:
     #
     #  "OTHERS": {
-    #		"Command Category": {
+    #		"CommandCategory": {
     #			"": {"flavor_text": "", "format": False, "long_text": "", "extra_info": False, "aliases": []},
     #			"": {"flavor_text": "", "format": False, "long_text": "", "extra_info": False, "aliases": []}
     #		},
-    #		"Second category": {
+    #		"SecondCategory": {
     #			"": {"flavor_text": "", "format": False, "long_text": "", "extra_info": False, "aliases": []}
     #		}
     #
@@ -193,8 +182,8 @@ config = {
 
         # Only people with the Administrator permission and people authorized can use
         "ADMIN": {
-            "addpic": {"flavor_text": "Adds a picture", "format": "<member>", "long_text": "Adds a picutre to a particular member's pictures list (for use with randompic)", "extra_info": False, "aliases": []}
-            #"delpic": {"flavor_text": "Removes a picture", "format": "<member> <picid>", "long_text": "Removes the picture of a particular member", "extra_info": False, "aliases": []}
+            "addpic": {"flavor_text": "Adds a picture", "format": "<member>", "long_text": "Adds a picutre to a particular member's pictures list (for use with randompic)", "extra_info": False, "aliases": []},
+            "delpic": {"flavor_text": "Removes a picture", "format": "<member> <picid>", "long_text": "Removes the picture of a particular member", "extra_info": False, "aliases": []}
         },
 
         # Only people with the Administrator permission can use

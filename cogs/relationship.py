@@ -27,7 +27,7 @@ from functions import string_pop
 
 
 class Relationship(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
@@ -39,7 +39,7 @@ class Relationship(commands.Cog):
         if person.id == ctx.author.id:
             await ctx.send("You can't kiss yourself!")
             return
-        if person.id == config['BOTID']:
+        if person.id == self.bot.user.id:
             await ctx.send("Awwh, i aprreciate you trying but i don't want you to freeze!")
             return
         if person.bot is True:
@@ -65,7 +65,7 @@ class Relationship(commands.Cog):
         if person.id == ctx.author.id:
             await ctx.send("You can't hug yourself!")
             return
-        if person.id == config['BOTID']:
+        if person.id == self.bot.user.id:
             await ctx.send("Awwh, i aprreciate you trying but i don't want you to freeze!")
             return
         if person.bot is True:

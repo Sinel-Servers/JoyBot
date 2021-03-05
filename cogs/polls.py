@@ -25,7 +25,7 @@ from functions import string_pop
 
 
 class polls(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(aliases=["yesnovote"])

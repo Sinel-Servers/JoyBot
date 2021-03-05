@@ -24,7 +24,7 @@ from config import config
 
 
 class _important(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     #----------COGS------------#
@@ -91,21 +91,21 @@ class _important(commands.Cog):
             if Ban(message.guild.id).is_banned():
                 return
         except AttributeError:
-            if message.author.id != config["BOTID"]:
+            if message.author.id != self.bot.user.id:
                 await self.bot.dmchannel.send(f"DM from {message.author} ({message.author.id}):\n\n------------------------\n{message.content}\n------------------------\nAttachments: {len(message.attachments) != 0}")
                 return
 
-        if message.content != f"<@!{config['BOTID']}>" or message.content != f"<@{config['BOTID']}>":
-            print("r1","'" + message.content + "'")
-            return
-        if message.author.id == config["BOTID"]:
-            print("r2")
-            return
-        if Counting(message.guild.id).channel_get_id() == message.channel.id:
-            print("r3")
+        if message.content != f"<@!{self.bot.user.id}>" or message.content != f"<@{self.bot.user.id}>":
+            print("r1", "'" + message.content + "'")
+            print("<@!{self.bot.user.id}>", "<@!{self.bot.user.id}>" == message.content)
             return
 
-        print("sending")
+        if message.author.id == self.bot.user.id:
+            return
+
+        if Counting(message.guild.id).channel_get_id() == message.channel.id:
+            return
+
         await message.channel.send(f"My prefix here is `{await determine_prefix(self.bot, message, True)}`!\n(Pinging me works everywhere: `@JoyBot#7306 `)\n\n"
                                    f"Type `{await determine_prefix(self.bot, message, True)}help` to get a list of commands!\nType"
                                    f"`{await determine_prefix(self.bot, message, True)}info` to get some info about me and my creator!")
@@ -120,7 +120,7 @@ class _important(commands.Cog):
             return
         elif "50013" in str(error):
             try:
-                await ctx.send(  # TODO: Figure out which permissions are missing
+                await ctx.send(
                     f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\n"
                     f"If you think you removed some permissions, you can re-invite me by running"
                     f"the `{await determine_prefix(self.bot, ctx, True)}invite` command.\n(make sure to kick me before you re-invite me!)")
@@ -139,7 +139,7 @@ class _important(commands.Cog):
             return
 
         await ctx.send("This command gave an error, it has been reported!")
-        await self.bot.errchannel.send(f"Hey <@{config['BOTOWNER']}>, there was an error!\n```\n{error}\n```\n"
+        await self.bot.errchannel.send(f"Hey <@{self.bot.owner_id}>, there was an error!\n```\n{error}\n```\n"
                                        f"The message: ```\n{ctx.message.content}\n```\n"
                                        f"The user trying to break the bot: {ctx.author}")
         raise error

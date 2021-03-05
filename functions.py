@@ -147,4 +147,4 @@ async def determine_prefix(bot, ctx: Union[Context, Message], raw: bool = False)
     settings = Settings(ctx.guild.id)
     if raw:
         return settings.get_setting("prefix")
-    return settings.get_setting("prefix"), f"<@{config['BOTID']}> ", f"<@!{config['BOTID']}> "
+    return settings.get_setting("prefix"), f"<@{bot.user.id}> ", f"<@!{bot.user.id}> "

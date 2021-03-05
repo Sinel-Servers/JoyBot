@@ -50,9 +50,6 @@ class DiscordListsPost(commands.Cog):
 
     @commands.command()
     async def post(self, ctx: commands.Context):
-        """
-        Manually posts guild count using discordlists.py (BotBlock)
-        """
         msg = await ctx.send("Posting server count...")
         try:
             result = await self.api.post_count()
@@ -71,9 +68,9 @@ class DiscordListsPost(commands.Cog):
         cpuusage = str(float(cpuusage[2])*10)
 
         memusage = [area for area in check_output(["free"]).decode("utf-8").split("\n")[1].split(" ") if area]
-        memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
-        memusage_total = str(round(int(memusage[1]) / (1000 * 1000), 2))
-        memusage_usage = str(float(memusage_total) - float(memusage_free))
+        memusage_free = str(int(memusage[-1]) / (1000 * 1000))
+        memusage_total = str(int(memusage[1]) / (1000 * 1000))
+        memusage_usage = str(round(float(memusage_total) - float(memusage_free), 2))
 
         e = Embed()
         e.set_thumbnail(url=self.bot.user.avatar_url)
