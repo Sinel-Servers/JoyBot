@@ -97,7 +97,7 @@ class _important(commands.Cog):
 
         if message.content != f"<@!{self.bot.user.id}>" or message.content != f"<@{self.bot.user.id}>":
             print("r1", "'" + message.content + "'")
-            print("<@!{self.bot.user.id}>", "<@!{self.bot.user.id}>" == message.content)
+            print(f"<@!{self.bot.user.id}>", f"<@!{self.bot.user.id}>" == message.content)
             return
 
         if message.author.id == self.bot.user.id:
