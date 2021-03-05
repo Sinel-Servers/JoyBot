@@ -95,9 +95,7 @@ class _important(commands.Cog):
                 await self.bot.dmchannel.send(f"DM from {message.author} ({message.author.id}):\n\n------------------------\n{message.content}\n------------------------\nAttachments: {len(message.attachments) != 0}")
                 return
 
-        if message.content != f"<@!{self.bot.user.id}>" or message.content != f"<@{self.bot.user.id}>":
-            print("r1", "'" + message.content + "'")
-            print(f"<@!{self.bot.user.id}>", f"<@!{self.bot.user.id}>" == message.content)
+        if message.content != f"<@!{self.bot.user.id}>":
             return
 
         if message.author.id == self.bot.user.id:
