@@ -130,7 +130,7 @@ class _important(commands.Cog):
             await ctx.send("That's not a valid member!")
             return
 
-        elif isinstance(error, commands.errors.UnexpectedQuoteError):
+        elif isinstance(error, commands.errors.UnexpectedQuoteError) or isinstance(error, commands.InvalidEndOfQuotedStringError):
             await ctx.send("Hey, due to the foundation JoyBot is built on, you can't use quotes like that! If you can, "
                            "try replacing the double-quotes with single-quotes, that usually fixes things. Sorry for the "
                            "inconvenience!")
