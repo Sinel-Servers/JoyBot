@@ -137,7 +137,7 @@ class _important(commands.Cog):
             return
 
         await ctx.send("This command gave an error, it has been reported!")
-        await self.bot.errchannel.send(f"Hey <@{self.bot.owner_id}>, there was an error!\n```\n{error}\n```\n"
+        await self.bot.errchannel.send(f"Hey <@{config['SUPERADMINIDS'][0]}>, there was an error!\n```\n{error}\n```\n"
                                        f"The message: ```\n{ctx.message.content}\n```\n"
                                        f"The user trying to break the bot: {ctx.author}")
         raise error

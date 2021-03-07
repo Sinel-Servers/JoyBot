@@ -30,6 +30,7 @@ config = {
     "PREFIX": ".",
 
     # The discord ids of all the super admins
+    # The first id is considered the owner
     "SUPERADMINIDS": [
         246862123328733186  # Joyte
     ],
