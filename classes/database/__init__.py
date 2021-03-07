@@ -24,7 +24,7 @@ class Database:
     def __init__(self, database_name: str):
         self._db = self._make_connection(database_name)
 
-    def _make_connection(self, name: str):
+    def _make_connection(self, name: str) -> sqlite3.Connection:
         """ Returns connection object to database
 
         :param name: The name of the database
@@ -32,18 +32,18 @@ class Database:
         """
         return sqlite3.connect(name + ".db")
 
-    def _close_connection(self):
+    def _close_connection(self) -> None:
         """ Closes connection object """
         self._db.close()
 
-    def _make_cursor(self):
+    def _make_cursor(self) -> sqlite3.Cursor:
         """ Returns cursor object to connection object
 
         :return: sqlite3.Cursor
         """
         return self._db.cursor()
 
-    def _exec_sql_code(self, sqlcode: str):
+    def _exec_sql_code(self, sqlcode: str) -> list:
         """ Executes SQL code, and commits it.
 
         :param sqlcode: The SQL code.
@@ -53,7 +53,7 @@ class Database:
         self._db.commit()
         return cursor.fetchall()
 
-    def _make_table(self, tablename: str, data: list):
+    def _make_table(self, tablename: str, data: list) -> None:
         """ Makes table in a database
 
         :param tablename: Name of the table
@@ -65,7 +65,7 @@ class Database:
         for column in data:
             sqlcode += f"{column[0]} {column[1]}, "
         sqlcode = sqlcode[:-2] + ");"
-        return self._exec_sql_code(sqlcode)
+        self._exec_sql_code(sqlcode)
 
     def _delete_table(self, tablename: str):
         """ Deletes a table from a database
@@ -75,16 +75,16 @@ class Database:
         """
         return self._exec_sql_code(f"DROP TABLE {tablename};")
 
-    def _table_exists(self, tablename: str):
+    def _table_exists(self, tablename: str) -> bool:
         """ Checks if a table exists
 
         :param tablename: Name of the table
-        :return: Either True or False
+        :return: Whether the table exists
         """
         sqlcode = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tablename}';"
         return len(self._exec_sql_code(sqlcode)) > 0
 
-    def _lookup_record(self, tablename: str, expression: str = ""):
+    def _lookup_record(self, tablename: str, expression: str = "") -> list:
         """ Looks up a record
 
         :param tablename: Name of the table
@@ -97,12 +97,11 @@ class Database:
         sqlcode += ";"
         return self._exec_sql_code(sqlcode)
 
-    def _add_record(self, tablename: str, record_data: list):
+    def _add_record(self, tablename: str, record_data: list) -> None:
         """ Adds a record to a table on a database
 
         :param tablename: Name of the table
         :param record_data: List of tuples with the format ("Column name", "data")
-        :return: Result from the sql code
         """
         sqlcode = f"INSERT INTO {tablename}("
         values = ""
@@ -110,9 +109,9 @@ class Database:
             sqlcode += f"{column[0]}, "
             values += f"{column[1]}, "
         sqlcode = sqlcode[:-2] + f") VALUES({values[:-2]});"
-        return self._exec_sql_code(sqlcode)
+        self._exec_sql_code(sqlcode)
 
-    def _update_record(self, tablename: str, record_data: list, expression: str = ""):
+    def _update_record(self, tablename: str, record_data: list, expression: str = "") -> None:
         """ Updates a record from a database
 
         :param tablename: Name of the table
@@ -129,9 +128,9 @@ class Database:
             sqlcode += f" WHERE {expression}"
 
         sqlcode += ";"
-        return self._exec_sql_code(sqlcode)
+        self._exec_sql_code(sqlcode)
 
-    def _delete_record(self, tablename: str, expression: str = ""):
+    def _delete_record(self, tablename: str, expression: str = "") -> None:
         """ Deletes a record from a database
 
         :param tablename: Name of the table
@@ -142,4 +141,4 @@ class Database:
         if expression:
             sqlcode += f" WHERE {expression}"
         sqlcode += ";"
-        return self._exec_sql_code(sqlcode)
+        self._exec_sql_code(sqlcode)
