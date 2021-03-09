@@ -151,10 +151,10 @@ class Other(commands.Cog):
         await msg.add_reaction(config["CHAR_CROSS"])
 
     @commands.command()
-    async def invite(self, ctx: commands.Context):
+    async def invite(self, ctx: commands.Context):  # TODO: Make embed
         await ctx.send(f"""
         Oh, you want to add me? That's nice, here's an invite link to add JoyBot to your own server:
-        https://sinelservers.xyz/stuff-made/JoyBot/invite.php
+        https://discord.com/oauth2/authorize?client_id=504030703264989194&permissions=388160&redirect_uri=https%3A%2F%2Fsinelservers.xyz%2Fstuff-made%2FJoyBot%2Fthanks.php&response_type=code&scope=bot%20identify
         """)
 
     @commands.command()
