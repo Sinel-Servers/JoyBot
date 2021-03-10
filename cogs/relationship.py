@@ -51,10 +51,10 @@ class Relationship(commands.Cog):
             if url.endswith("\n"):
                 url = await string_pop(url, -1)
 
-        e = discord.Embed(title=f"{ctx.author} has kissed {person}", description="\u200e")
+        e = discord.Embed(title=f"{ctx.author} has kissed {person}")
         e.set_image(url=url)
 
-        await ctx.send("\u200e", embed=e)
+        await ctx.send(embed=e)
 
     @commands.command()
     async def hug(self, ctx: commands.Context, person: discord.Member = None):
@@ -77,10 +77,10 @@ class Relationship(commands.Cog):
             if url.endswith("\n"):
                 url = await string_pop(url, -1)
 
-        e = discord.Embed(title=f"{ctx.author} has hugged {person}", description="\u200e")
+        e = discord.Embed(title=f"{ctx.author} has hugged {person}")
         e.set_image(url=url)
 
-        await ctx.send("\u200e", embed=e)
+        await ctx.send(embed=e)
 
 
 def setup(bot):

@@ -80,7 +80,7 @@ class DiscordListsPost(commands.Cog):
         e.add_field(name="CPU", value=f"Usage: `{cpuusage}%`", inline=False)
         e.add_field(name="Bot", value=f"Guilds: `{len(self.bot.guilds)}`\nShards: `{self.bot.shard_count}`\nPing: `{round(self.bot.latency * 1000)}ms`", inline=False)
 
-        await ctx.send("\u200e", embed=e)
+        await ctx.send(embed=e)
 
 
 def setup(bot):

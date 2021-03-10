@@ -77,20 +77,18 @@ class Bump(commands.Cog):
 
         bump = Bmp(ctx.guild.id, person.id)
 
-        embed = discord.Embed(
-                title=f"`{person}`'s bump stats",
-                description="\u200e"
-            )
+        e = discord.Embed()
+        e.title = f"`{person}`'s bump stats"
 
         if bump.get_pos() is None:
-            embed.add_field(name="Bump Stats", value="This person has not bumped this discord server yet!")
+            e.add_field(name="Bump Stats", value="This person has not bumped this discord server yet!")
         else:
-            embed.add_field(name="Bump Stats",
-                            value=f"Bump total: `{bump.get_total()}\n`"
-                                  f"Bump position: `{bump.get_pos()}`\n"
-                                  f"Current streak: `{bump.get_streak()[0]}`\n"
-                                  f"Highest streak: `{bump.get_streak()[1]}`\n"
-                            )
+            e.add_field(name="Bump Stats",
+                        value=f"Bump total: `{bump.get_total()}\n`"
+                              f"Bump position: `{bump.get_pos()}`\n"
+                              f"Current streak: `{bump.get_streak()[0]}`\n"
+                              f"Highest streak: `{bump.get_streak()[1]}`\n"
+                        )
 
         special_badges = ""
 
@@ -106,7 +104,7 @@ class Bump(commands.Cog):
             special_badges += f"<:{badgename}:{badgeid}>"
 
         if special_badges:
-            embed.add_field(name="Special Badges", value=special_badges, inline=False)
+            e.add_field(name="Special Badges", value=special_badges, inline=False)
 
         normal_badges_nums = [key for key in config["BUMP_FUNNIES"] if key <= bump.get_total()]
         normal_badges = ""
@@ -120,15 +118,15 @@ class Bump(commands.Cog):
                 normal_badges += f"<:{value}:{badgeid}>"
 
         if normal_badges:
-            embed.add_field(name="Normal Badges", value=normal_badges, inline=False)
+            e.add_field(name="Normal Badges", value=normal_badges, inline=False)
 
         # TODO: Events?
         event_badges = ""
         if event_badges:
-            embed.add_field(name="Event Badges", value=event_badges, inline=False)
+            e.add_field(name="Event Badges", value=event_badges, inline=False)
 
-        embed.set_thumbnail(url=person.avatar_url)
-        await ctx.send(embed=embed)
+        e.set_thumbnail(url=person.avatar_url)
+        await ctx.send(embed=e)
 
     @commands.command()
     async def topbumptotal(self, ctx: commands.Context):
@@ -193,7 +191,7 @@ class Bump(commands.Cog):
         top.add_field(name="Leaderboard", value=printstring, inline=False)
         top.set_thumbnail(url=ctx.guild.icon_url)
 
-        await message.edit(embed=top, content="\u200e")
+        await message.edit(embed=top, content=None)
 
     @commands.command()
     async def changebumptotal(self, ctx: commands.Context, person: discord.Member = None, amount: Union[int, str] = None):
