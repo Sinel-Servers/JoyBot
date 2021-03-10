@@ -65,7 +65,7 @@ class DiscordListsPost(commands.Cog):
     @commands.command()
     async def stats(self, ctx: commands.Context):
         cpuusage = [area for area in check_output(["mpstat"]).decode("utf-8").split("\n")[3].split(" ") if area]
-        cpuusage = str(float(cpuusage[2])*10)
+        cpuusage = str(float(cpuusage[2]))
 
         memusage = [area for area in check_output(["free"]).decode("utf-8").split("\n")[1].split(" ") if area]
         memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
