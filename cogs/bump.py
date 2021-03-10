@@ -133,8 +133,8 @@ class Bump(commands.Cog):
         if tnum <= 0:
             await ctx.send("Please make the number more than 0!")
             return
-        elif tnum > 25:
-            await ctx.send("Please keep the number less than 26!")
+        elif tnum > 50:
+            await ctx.send("Please keep the number less than 51!")
             return
 
         bump = Bmp(ctx.guild.id, ctx.author.id)
@@ -206,17 +206,41 @@ class Bump(commands.Cog):
             )
         top.set_thumbnail(url=ctx.guild.icon_url)
 
-        printstring = printstring.split("\n")
-        printstring = [string+"\n" for string in printstring]
+        printstring = [string+"\n" for string in printstring.split("\n")]
+
         printstring_1, printstring_2 = printstring[:len(printstring)//2], printstring[len(printstring)//2:]
         printstring_1, printstring_2 = "".join(printstring_1), "".join(printstring_2)
+
         top.add_field(name="Leaderboard", value=printstring_1, inline=False)
         top.add_field(name="\u200e", value=printstring_2, inline=False)
 
         try:
             await message.edit(embed=top, content=None)
         except discord.errors.HTTPException:
-            await message.edit(content="Sorry, the leaderboard was too big to send :(\n Try a smaller number!")
+            printstring_1 = [string + "\n" for string in printstring_1.split("\n")]
+            printstring_2 = [string + "\n" for string in printstring_2.split("\n")]
+
+            printstring_3, printstring_4 = printstring_2[:len(printstring_2) // 2], printstring_2[len(printstring_2) // 2:]
+            printstring_1, printstring_2 = printstring_1[:len(printstring_1) // 2], printstring_1[len(printstring_1) // 2:]
+
+            printstring_1, printstring_2 = "".join(printstring_1), "".join(printstring_2)
+            printstring_3, printstring_4 = "".join(printstring_3), "".join(printstring_4)
+
+            top = discord.Embed(
+                title=f"Top {tnum} bump totals for `{ctx.guild.name}`",
+                description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
+            )
+            top.set_thumbnail(url=ctx.guild.icon_url)
+
+            top.add_field(name="Leaderboard", value=printstring_1, inline=False)
+            top.add_field(name="\u200e", value=printstring_2, inline=False)
+            top.add_field(name="\u200e", value=printstring_3, inline=False)
+            top.add_field(name="\u200e", value=printstring_4, inline=False)
+
+            try:
+                await message.edit(embed=top, content=None)
+            except discord.errors.HTTPException:
+                await message.edit(content="Sorry, the embed was too big to send :(\nTry a smaller number!")
 
     @commands.command()
     async def changebumptotal(self, ctx: commands.Context, person: discord.Member = None, amount: Union[int, str] = None):
