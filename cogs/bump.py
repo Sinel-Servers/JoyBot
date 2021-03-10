@@ -152,6 +152,7 @@ class Bump(commands.Cog):
 
         for num, bump_data in enumerate(topbumps):
             num += 1
+            print(bump_data)
             user = await self.bot.fetch_user(bump_data[0])
 
             endstring = ""
@@ -197,7 +198,7 @@ class Bump(commands.Cog):
             )
         top.add_field(name="Leaderboard", value=printstring, inline=False)
         top.set_thumbnail(url=ctx.guild.icon_url)
-        
+
         try:
             await message.edit(embed=top, content=None)
 
@@ -218,6 +219,7 @@ class Bump(commands.Cog):
 
             try:
                 await message.edit(embed=top, content=None)
+
             except discord.errors.HTTPException:
                 await message.edit(content="Sorry, the embed was too big to send :(\nTry a smaller number!")
 
