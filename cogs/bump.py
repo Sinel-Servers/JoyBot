@@ -207,6 +207,7 @@ class Bump(commands.Cog):
         top.set_thumbnail(url=ctx.guild.icon_url)
 
         printstring = printstring.split("\n")
+        printstring = [string+"\n" for string in printstring]
         printstring_1, printstring_2 = printstring[:len(printstring)//2], printstring[len(printstring)//2:]
         printstring_1, printstring_2 = "".join(printstring_1), "".join(printstring_2)
         top.add_field(name="Leaderboard", value=printstring_1, inline=False)
