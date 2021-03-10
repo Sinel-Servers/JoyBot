@@ -166,7 +166,7 @@ config = {
             "privacy": {"flavor_text": "View the privacy policy", "format": False, "long_text": "View the privacy policy on JoyBot", "extra_info": False, "aliases": []},
             "invite": {"flavor_text": "JoyBot invite link", "format": False, "long_text": "Gives you the invite link, so you can use JoyBot in your own server", "extra_info": False, "aliases": []},
             "bumptotal": {"flavor_text": "Shows your bumptotal", "format": "[member]", "long_text": "Shows you the bumptotal of the guild you're in, either you or the supplied member", "extra_info": False, "aliases": []},
-            "topbumptotal": {"flavor_text": "Shows the top bumpers", "format": False, "long_text": "Shows the top ten bumpers of the guild you're in", "extra_info": False, "aliases": []},
+            "topbumptotal": {"flavor_text": "Shows the top bumpers", "format": "[num]", "long_text": "Shows the top num bumpers of the guild you're in", "extra_info": False, "aliases": []},
             "randompic": {"flavor_text": "Gets a random picture", "format": "<member | 'list'>", "long_text": "Gets a random picture from a member of your guild, pictures must be added by an admin!", "extra_info": "You can use `list` as an argument to get a list of members who have added a picture", "aliases": []},
             "hug": {"flavor_text": "Hug someone!", "format": "<member>", "long_text": "Hug someone, shows a related gif!", "extra_info": False, "aliases": []},
             "kiss": {"flavor_text": "Kiss someone!", "format": "<member>", "long_text": "Kiss someone, shows a related gif!", "extra_info": False, "aliases": []},

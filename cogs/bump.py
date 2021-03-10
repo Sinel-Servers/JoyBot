@@ -129,10 +129,17 @@ class Bump(commands.Cog):
         await ctx.send(embed=e)
 
     @commands.command()
-    async def topbumptotal(self, ctx: commands.Context):
+    async def topbumptotal(self, ctx: commands.Context, num: int = 10):
+        if num <= 0:
+            await ctx.send("Please make the number more than 0!")
+            return
+        elif num > 25:
+            await ctx.send("Please keep the number less than 26!")
+            return
+
         bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
-            topbumps = bump.get_top(10)
+            topbumps = bump.get_top(num)
             if not topbumps:
                 raise NoDataError
 
