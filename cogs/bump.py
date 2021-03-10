@@ -129,17 +129,17 @@ class Bump(commands.Cog):
         await ctx.send(embed=e)
 
     @commands.command()
-    async def topbumptotal(self, ctx: commands.Context, num: int = 10):
-        if num <= 0:
+    async def topbumptotal(self, ctx: commands.Context, tnum: int = 10):
+        if tnum <= 0:
             await ctx.send("Please make the number more than 0!")
             return
-        elif num > 25:
+        elif tnum > 25:
             await ctx.send("Please keep the number less than 26!")
             return
 
         bump = Bmp(ctx.guild.id, ctx.author.id)
         try:
-            topbumps = bump.get_top(num)
+            topbumps = bump.get_top(tnum)
             if not topbumps:
                 raise NoDataError
 
@@ -148,7 +148,7 @@ class Bump(commands.Cog):
             return
 
         printstring = ""
-        message = await ctx.send(f"Getting the top 10 total times bumped...")
+        message = await ctx.send(f"Getting the top {tnum} total times bumped...")
 
         for num, bump_data in enumerate(topbumps):
             num += 1
@@ -192,7 +192,7 @@ class Bump(commands.Cog):
                 printstring += f"{badge} {num})   {user} — {bump_data[1]} {endstring}\n"
 
         top = discord.Embed(
-                title=f"Top bump totals for `{ctx.guild.name}`",
+                title=f"Top {tnum} bump totals for `{ctx.guild.name}`",
                 description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
             )
         top.add_field(name="Leaderboard", value=printstring, inline=False)
