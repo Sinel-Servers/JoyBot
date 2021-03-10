@@ -164,12 +164,12 @@ class Other(commands.Cog):
     async def info(self, ctx: commands.Context):
         e = discord.Embed()
         e.title = "Info"
-        e.description = """
+        e.description = f"""
             Hey, i'm JoyBot! I was made by Joyte as a small project, and am currently just maintained and worked on by him!
             I like long walks on the beach and watching the sunset :)
             
             If you ever need help, just use the `{await determine_prefix(self.bot, ctx, True)}help` command, and i'll answer any and all questions you have!
-            If you've got a more serious problem with me, you can always visit my discord [Right here](https://sinelservers.xyz/discord.php) where you can ask more in depth questions or report that there's something wrong with me
+            If you've got a more serious problem with me, you can always visit my discord [Right here](https://sinelservers.xyz/discord.php?utm_source=info_cmd) where you can ask more in depth questions or report that there's something wrong with me
             You can also make suggestions which you'd like added (although keep in mind my creator is just one person and is busy with school and other life-related things)
             
             Hope you enjoy using me!
