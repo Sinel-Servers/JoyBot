@@ -198,7 +198,6 @@ class Bump(commands.Cog):
         top.add_field(name="Leaderboard", value=printstring, inline=False)
         top.set_thumbnail(url=ctx.guild.icon_url)
 
-        await message.edit(embed=top, content=None)
 
     @commands.command()
     async def changebumptotal(self, ctx: commands.Context, person: discord.Member = None, amount: Union[int, str] = None):
