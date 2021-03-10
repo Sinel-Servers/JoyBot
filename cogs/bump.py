@@ -152,7 +152,6 @@ class Bump(commands.Cog):
 
         for num, bump_data in enumerate(topbumps):
             num += 1
-            print(bump_data)
             user = await self.bot.fetch_user(bump_data[0])
 
             endstring = ""
