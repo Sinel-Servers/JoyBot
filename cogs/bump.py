@@ -130,8 +130,8 @@ class Bump(commands.Cog):
 
     @commands.command()
     async def topbumptotal(self, ctx: commands.Context, tnum: int = 10):
-        if tnum <= 0:
-            await ctx.send("Please make the number more than 0!")
+        if tnum <= 1:
+            await ctx.send("Please make the number more than 1!")
             return
         elif tnum > 50:
             await ctx.send("Please keep the number less than 51!")
