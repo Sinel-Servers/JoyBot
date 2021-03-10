@@ -153,7 +153,7 @@ class Other(commands.Cog):
     @commands.command()
     async def invite(self, ctx: commands.Context):
         e = discord.Embed()
-        e.title = "Info"
+        e.title = "Invite"
         e.description = """
             Oh, you want to add me? That's nice, here's an invite link to add JoyBot to your own server:
             [Just click here!](https://sinelservers.xyz/stuff-made/JoyBot/invite.php?utm_source=invite_cmd)
