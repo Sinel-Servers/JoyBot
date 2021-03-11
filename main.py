@@ -116,15 +116,11 @@ async def on_message(message: Message):
 
             perms_formatted = "".join([f"• `{perm}`\n" for perm in missing_perms])
 
-            if "send_messages" not in missing_perms:
-                try:
-                    await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command to bypass and ignore this message.")
-                except Forbidden:
-                    await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command in your server to bypass and ignore this message.")
-
-            else:
+            try:
+                await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command to bypass and ignore this message.")
+            except Forbidden:
                 await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command in your server to bypass and ignore this message.")
-
+                    
             return
 
     # All permissions good
