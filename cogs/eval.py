@@ -22,8 +22,10 @@ import io
 import contextlib	
 from typing import Optional
 from discord.ext import commands
+
 from config import config
 from functions import string_pop
+from classes.errors import UnauthorizedUserException
 
 
 class evalClass(commands.Cog):
@@ -33,8 +35,8 @@ class evalClass(commands.Cog):
 	@commands.command(aliases=["eval"])
 	async def evaluate(self, ctx: commands.Context, awa: Optional[bool], *, code: str = None):
 		if ctx.author.id not in config["SUPERADMINIDS"]:
-			await ctx.send(f"{ctx.author.mention}, you can't use this command!")
-			return
+			raise UnauthorizedUserException
+
 		if code is None:
 			await ctx.send(f"Please supply some code!")
 			return
@@ -54,8 +56,8 @@ class evalClass(commands.Cog):
 	@commands.command(aliases=["e", "exec"])
 	async def execute(self, ctx: commands.Context, awa: Optional[bool], *, code: str = None):
 		if ctx.author.id not in config["SUPERADMINIDS"]:
-			await ctx.send(f"{ctx.author.mention}, you can't use this command!")
-			return
+			raise UnauthorizedUserException
+
 		if code is None:
 			await ctx.send(f"Please supply some code!")
 			return

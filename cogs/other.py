@@ -73,6 +73,8 @@ class Other(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent):
+        # TODO: Switch to using wait_for
+        #       https://discordpy.readthedocs.io/en/latest/api.html#discord.Client.wait_for
         messagedb = Message(reaction.user_id, reaction.message_id)
         try:
             msgmod = messagedb.get()
@@ -121,6 +123,9 @@ class Other(commands.Cog):
 
     @commands.command()
     async def guildban(self, ctx: commands.Context, guild_id: int = None):
+        # TODO: Switch to using wait_for
+        #       https://discordpy.readthedocs.io/en/latest/api.html#discord.Client.wait_for
+
         if ctx.author.id not in config["SUPERADMINIDS"]:
             await ctx.send("You can't use this command!")
             return

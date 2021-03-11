@@ -19,11 +19,11 @@
 
 import discord
 import random
-
 from discord.ext import commands
 from typing import Union
 
 from config import config
+from classes.errors import UnauthorizedUserException
 from classes.database.guild import Settings
 from classes.database.guild import Pictures as Pic
 from functions import determine_prefix, text_pretty_mid_end
@@ -84,8 +84,7 @@ class Pictures(commands.Cog):
     @commands.command()
     async def addpic(self, ctx: commands.Context, member: discord.Member = None):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("admins_list"):
-            await ctx.send("You're not an admin!")
-            return
+            raise UnauthorizedUserException
 
         if member is None:
             await ctx.send(f"Please use the proper usage!\nType `{await determine_prefix(self.bot, ctx, True)}help addpic` if you're stuck!")
@@ -123,6 +122,9 @@ class Pictures(commands.Cog):
 
     @commands.command()
     async def delpic(self, ctx: commands.Context):
+        if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator and ctx.author.id not in await Settings(ctx.guild.id).get_setting("admins_list"):
+            raise UnauthorizedUserException
+
         await ctx.send(f"Hi, unfortunately due to code corruption this command is gone! The team behind this are working hard to build it all from scratch, but for now you can join the support server (`{await determine_prefix(self.bot, ctx, True)}info`), and have someone remove any pictures manually.\n\nThanks for the understanding!")
 
 

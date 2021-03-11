@@ -19,7 +19,8 @@
 
 from discord.ext import commands
 from discord import Embed
-from classes.database.guild import Pictures, Bump
+from config import config
+from classes.errors import UnauthorizedUserException
 from subprocess import check_output
 import discordlists
 
@@ -51,6 +52,9 @@ class DiscordListsPost(commands.Cog):
 
     @commands.command()
     async def post(self, ctx: commands.Context):
+        if ctx.author.id not in config["SUPERADMINIDS"]:
+            raise UnauthorizedUserException
+
         msg = await ctx.send("Posting server count...")
         try:
             result = await self.api.post_count()
@@ -72,7 +76,7 @@ class DiscordListsPost(commands.Cog):
         memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
         memusage_total = str(round(int(memusage[1]) / (1000 * 1000), 2))
         memusage_usage = str(round(float(memusage_total) - float(memusage_free), 2))
- 
+
         e = Embed()
         e.set_thumbnail(url=self.bot.user.avatar_url)
         e.title = "Stats for JoyBot/Guild"

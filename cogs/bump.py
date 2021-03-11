@@ -21,9 +21,10 @@ import discord
 from typing import Union
 from discord.ext import commands
 
+from classes.errors import UnauthorizedUserException
 from functions import string_pop, determine_prefix
 from classes.exceptions import NoDataError
-from classes.database.guild import Settings, Counting, Ban
+from classes.database.guild import Counting, Ban
 from classes.database.guild import Bump as Bmp
 from classes.get_id import get_id
 from config import config
@@ -230,9 +231,8 @@ class Bump(commands.Cog):
 
     @commands.command()
     async def changebumptotal(self, ctx: commands.Context, person: discord.Member = None, amount: Union[int, str] = None):
-        if ctx.author.id not in config["SUPERADMINIDS"]:
-            await ctx.send(f"{ctx.author.mention}, you can't use this command!")
-            return
+        if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
+            raise UnauthorizedUserException
 
         if person is None:
             await ctx.send(f"{ctx.author.mention}, Please supply a person!")
@@ -267,9 +267,8 @@ class Bump(commands.Cog):
 
     @commands.command()
     async def resetbumptotal(self, ctx: commands.Context, person: Union[discord.Member, str]):
-        if ctx.author.id not in config["SUPERADMINIDS"] and ctx.author.id not in Settings(ctx.guild.id).get_setting("admins_list") and not ctx.author.guild_permissions.administrator:
-            await ctx.send(f"{ctx.author.mention}, you can't use this command!")
-            return
+        if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
+            raise UnauthorizedUserException
 
         if person is discord.Member:
             if person.id == ctx.author.id:

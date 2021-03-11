@@ -30,6 +30,8 @@ class polls(commands.Cog):
 
     @commands.command(aliases=["yesnovote"])
     async def yesnopoll(self, ctx: commands.Context, *, question: str = None):
+        # TODO: Switch to using wait_for
+        #       https://discordpy.readthedocs.io/en/latest/api.html#discord.Client.wait_for
         if question is None:
             msg = await ctx.send(f"{ctx.author.mention}, Please supply arguments!\nExample:    `.numberpoll This is the question`")
             await msg.add_reaction(config["CHAR_CROSS"])
@@ -45,6 +47,8 @@ class polls(commands.Cog):
 
     @commands.command(aliases=["numbervote"])
     async def numberpoll(self, ctx: commands.Context, *, text: str = None):
+        # TODO: Switch to using wait_for
+        #       https://discordpy.readthedocs.io/en/latest/api.html#discord.Client.wait_for
         await ctx.message.delete()
         if text is None:
             msg = await ctx.send(f"{ctx.author.mention}, Please supply arguments!\nExample:\t`.numberpoll This is the question, This is answer one, This is answer two, etc`")

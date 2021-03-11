@@ -20,6 +20,7 @@ import discord
 from discord.ext import commands
 from functions import determine_prefix
 from classes.database.guild import Counting, Settings, Ban, Pictures, Bump
+from classes.errors import UnauthorizedUserException
 from config import config
 
 
@@ -31,6 +32,9 @@ class _important(commands.Cog):
 
     @commands.command()
     async def cogload(self, ctx: commands.Context, extension: str = None):
+        if ctx.author not in config["SUPERADMINIDS"]:
+            raise UnauthorizedUserException
+
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -53,6 +57,9 @@ class _important(commands.Cog):
 
     @commands.command()
     async def cogreload(self, ctx: commands.Context, extension: str = None):
+        if ctx.author not in config["SUPERADMINIDS"]:
+            raise UnauthorizedUserException
+
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -71,6 +78,9 @@ class _important(commands.Cog):
 
     @commands.command()
     async def cogunload(self, ctx: commands.Context, extension: str = None):
+        if ctx.author not in config["SUPERADMINIDS"]:
+            raise UnauthorizedUserException
+
         if extension is None:
             await ctx.send(f"Please specify a cog!")
             return
@@ -109,6 +119,10 @@ class _important(commands.Cog):
     #-------------ON ERROR-----------#
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.errors.CommandError):
+        if isinstance(error, UnauthorizedUserException):
+            await ctx.send("You aren't authorized to use this command!")
+            return
+
         if isinstance(error, commands.errors.CommandNotFound):
             return
         elif isinstance(error, commands.errors.MissingRequiredArgument):

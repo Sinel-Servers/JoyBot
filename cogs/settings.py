@@ -19,6 +19,7 @@
 
 from discord.ext import commands
 
+from classes.errors import UnauthorizedUserException
 from functions import text_pretty_mid_end, determine_prefix
 from classes.database.guild import Settings as Sttngs
 from classes.database.guild import Counting
@@ -35,8 +36,7 @@ class Settings(commands.Cog):
     @commands.command()
     async def listsettings(self, ctx: commands.Context):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
-            await ctx.send("Hey, you can't use this command!")
-            return
+            raise UnauthorizedUserException
 
         settings = Sttngs(ctx.guild.id)
         cur_settings = settings.get_all_settings()
@@ -53,8 +53,7 @@ class Settings(commands.Cog):
     @commands.command()
     async def changesetting(self, ctx: commands.Context, setting_name: str, setting_value=None):
         if ctx.author.id not in config["SUPERADMINIDS"] and not ctx.author.guild_permissions.administrator:
-            await ctx.send("Hey, you can't use this command!")
-            return
+            raise UnauthorizedUserException
 
         settings = Sttngs(ctx.guild.id)
 
