@@ -107,7 +107,12 @@ async def on_message(message: Message):
     if not b.is_bypassed:
         if missing_perms:
             if not message.author.permissions_in(message.channel).manage_guild:
-                return
+                await message.channel.send(
+                    "Whoever invited the bot disabled some permissions so it won't work!\n"
+                    "Please notify them of this, and tell them to run a command, "
+                    "it should show them which permissions to add."
+
+                )
 
             perms_formatted = "".join([f"• `{perm}`\n" for perm in missing_perms])
 
