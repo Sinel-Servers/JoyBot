@@ -133,6 +133,7 @@ class Bump(commands.Cog):
         if tnum <= 1:
             await ctx.send("Please make the number more than 1!")
             return
+
         elif tnum > 50:
             await ctx.send("Please keep the number less than 51!")
             return
@@ -147,7 +148,7 @@ class Bump(commands.Cog):
             await ctx.send(content=f"{ctx.author.mention}, looks like nobody has bumped disboard yet")
             return
 
-        printstring = ""
+        sendstring = ""
         message = await ctx.send(f"Getting the top {tnum} total times bumped...")
 
         for num, bump_data in enumerate(topbumps):
@@ -187,15 +188,15 @@ class Bump(commands.Cog):
                 badge = "\u200e \u200e \u200e \u200e \u200e \u200e \u200e"
 
             if num >= 9:
-                printstring += f"{badge} {num})  {user} — {bump_data[1]} {endstring}\n"
+                sendstring += f"{badge} {num})  {user} — {bump_data[1]} {endstring}\n"
             else:
-                printstring += f"{badge} {num})   {user} — {bump_data[1]} {endstring}\n"
+                sendstring += f"{badge} {num})   {user} — {bump_data[1]} {endstring}\n"
 
         top = discord.Embed(
                 title=f"Top {tnum} bump totals for `{ctx.guild.name}`",
                 description="These are the top bump totals for this guild. `!d bump` to try and get on the leaderboard!"
             )
-        top.add_field(name="Leaderboard", value=printstring, inline=False)
+        top.add_field(name="Leaderboard", value=sendstring, inline=False)
         top.set_thumbnail(url=ctx.guild.icon_url)
 
         try:
@@ -208,13 +209,13 @@ class Bump(commands.Cog):
             )
             top.set_thumbnail(url=ctx.guild.icon_url)
 
-            printstring = [string+"\n" for string in printstring.split("\n")]
+            sendstring = [string+"\n" for string in sendstring.split("\n")]
 
-            printstring_1, printstring_2 = printstring[:len(printstring)//2], printstring[len(printstring)//2:]
-            printstring_1, printstring_2 = "".join(printstring_1), "".join(printstring_2)
+            sendstring_1, sendstring_2 = sendstring[:len(sendstring)//2], sendstring[len(sendstring)//2:]
+            sendstring_1, sendstring_2 = "".join(sendstring_1), "".join(sendstring_2)
 
-            top.add_field(name="Leaderboard", value=printstring_1, inline=False)
-            top.add_field(name="\u200e", value=printstring_2, inline=False)
+            top.add_field(name="Leaderboard", value=sendstring_1, inline=False)
+            top.add_field(name="\u200e", value=sendstring_2, inline=False)
 
             try:
                 await message.edit(embed=top, content=None)
