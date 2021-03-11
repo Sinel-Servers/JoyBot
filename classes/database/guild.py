@@ -171,10 +171,10 @@ class Bump(Database):
             self.streak_data["cur_streak"] = str(self.user_id)
 
             if str(self.user_id) not in self.streak_data:
-                self.streak_data[str(self.user_id)] = (1, 1)
+                self.streak_data[str(self.user_id)] = (amount, amount)
 
             else:
-                self.streak_data[str(self.user_id)] = (1, self.streak_data[str(self.user_id)][1])
+                self.streak_data[str(self.user_id)] = (amount, self.streak_data[str(self.user_id)][1])
 
         self._commit()
 
