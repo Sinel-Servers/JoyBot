@@ -19,6 +19,7 @@
 
 from discord.ext import commands
 from discord import Embed
+from classes.database.guild import Pictures, Bump
 from subprocess import check_output
 import discordlists
 
@@ -71,14 +72,15 @@ class DiscordListsPost(commands.Cog):
         memusage_free = str(round(int(memusage[-1]) / (1000 * 1000), 2))
         memusage_total = str(round(int(memusage[1]) / (1000 * 1000), 2))
         memusage_usage = str(round(float(memusage_total) - float(memusage_free), 2))
-
+ 
         e = Embed()
         e.set_thumbnail(url=self.bot.user.avatar_url)
-        e.title = "Stats for JoyBot"
-        e.description = "These are the stats for JoyBot"
+        e.title = "Stats for JoyBot/Guild"
+        e.description = "These are the stats for JoyBot and your guild"
         e.add_field(name="Memory", value=f"Total: `{memusage_total}GB`\nUsage: `{memusage_usage}GB`\nFree: `{memusage_free}GB`", inline=False)
         e.add_field(name="CPU", value=f"Usage: `{cpuusage}%`", inline=False)
         e.add_field(name="Bot", value=f"Guilds: `{len(self.bot.guilds)}`\nShards: `{self.bot.shard_count}`\nPing: `{round(self.bot.latency * 1000)}ms`", inline=False)
+        e.add_field(name="Guild", value=f"Shard ID: {self.bot.shard_id}")
 
         await ctx.send(embed=e)
 
