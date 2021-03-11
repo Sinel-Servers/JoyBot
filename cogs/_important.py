@@ -120,6 +120,7 @@ class _important(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.errors.CommandError):
         if isinstance(error, commands.CommandInvokeError):
+            print(error)
             error = getattr(error, "original", error)
 
         if isinstance(error, UnauthorizedUserException):

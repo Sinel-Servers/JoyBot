@@ -115,7 +115,7 @@ async def on_message(message: Message):
                 try:
                     await message.channel.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command to bypass and ignore this message.")
                 except Forbidden:
-                    pass
+                    await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command in your server to bypass and ignore this message.")
 
             else:
                 await message.author.send(f"I'm missing these permissions:\n{perms_formatted}\nPlease re-invite the bot and give it to me!\nYou may use the `{await determine_prefix(bot, message, True)}pb` command in your server to bypass and ignore this message.")
@@ -125,6 +125,8 @@ async def on_message(message: Message):
     # All permissions good
     if b.is_bypassed and not missing_perms:
         b.change()
+
+    print("Processing " + message.content)
     await bot.process_commands(message)
 
 

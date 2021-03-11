@@ -116,7 +116,7 @@ class Other(commands.Cog):
                     ctx_channel = ctx_guild.get_channel(reaction.channel_id)
                     message = await ctx_channel.fetch_message(reaction.message_id)
                     await message.delete()
-                    message.remove()
+                    messagedb.remove()
 
         except TypeError:
             return
