@@ -126,7 +126,6 @@ async def on_message(message: Message):
     if b.is_bypassed and not missing_perms:
         b.change()
 
-    print("Processing " + message.content)
     await bot.process_commands(message)
 
 
