@@ -102,17 +102,14 @@ async def on_message(message: Message):
 
     p = message.guild.me.permissions_in(message.channel)
     for perm in permissions_list:
-        exec(f"if not p.{perm}:\n\tmissing_perms.append('{''.join(perm.split('_')).title()}')", locals())
+        exec(f"if not p.{perm}:\n\tmissing_perms.append('{' '.join(perm.split('_')).title()}')", locals())
 
     if not b.is_bypassed:
-        print(missing_perms)
         if missing_perms:
-            if not message.author.permissions_in(message.channel).manage_guild or message.author.id in config["SUPERADMINIDS"]:
+            if not message.author.permissions_in(message.channel).manage_guild:
                 return
 
             perms_formatted = "".join([f"• `{perm}`\n" for perm in missing_perms])
-
-            print(perms_formatted)
 
             if "send_messages" not in missing_perms:
                 try:
