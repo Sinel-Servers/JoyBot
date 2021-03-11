@@ -69,7 +69,7 @@ async def on_message(message: Message):
 
     b = Bypass(message.guild.id)
 
-    is_pb_command = any([message.content.startswith(prefix + "pb") for prefix in await determine_prefix(bot, message)])
+    is_pb_command = any([message.content == prefix + "pb" for prefix in await determine_prefix(bot, message)])
     if is_pb_command:
         if message.author.permissions_in(message.channel).manage_guild or message.author.id in config["SUPERADMINIDS"]:
             try:
