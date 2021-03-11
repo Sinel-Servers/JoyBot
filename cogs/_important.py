@@ -134,6 +134,7 @@ class _important(commands.Cog):
             return
 
         elif "50013" in str(error):
+            print(error)
             try:
                 await ctx.send(
                     f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\n"
