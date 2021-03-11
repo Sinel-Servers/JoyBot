@@ -135,13 +135,7 @@ class _important(commands.Cog):
 
         elif isinstance(error, discord.errors.Forbidden):
             try:
-                await ctx.send(
-                    f"Looks like i'm missing a permission, make sure you invited me with the right  "
-                    f"permissions integer and all the tick-boxes were selected!\n"
-                    f"If you think you removed some permissions, you can re-invite me by running the"
-                    f"`{await determine_prefix(self.bot, ctx, True)}invite` command.\n(make sure to kick "
-                    f"me before you re-invite me!)"
-                )
+                await ctx.send(f"Couldn't run this command, there was a permissions error.")
             except discord.errors.Forbidden:
                 pass
             return
