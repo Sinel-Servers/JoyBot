@@ -71,7 +71,7 @@ class Bump(commands.Cog):
                     await message.channel.send(send_msg)
 
     @commands.command()
-    async def bumptotal(self, ctx: commands.Context, person: discord.Member = None):
+    async def bumptotal(self, ctx: commands.Context, person: Union[discord.Member, discord.User] = None):
         if person is None:
             person = ctx.author
 
@@ -132,7 +132,7 @@ class Bump(commands.Cog):
     async def topbumptotal(self, ctx: commands.Context, tnum: int = 10):
         if tnum == 1:
             bump = Bmp(ctx.guild.id)
-            await self.bumptotal(ctx, ctx.guild.get_member(int(bump.get_top(1, raw=True))))
+            await self.bumptotal(ctx, await self.bot.fetch_user(int(bump.get_top(1, raw=True))))
             return
 
         if tnum < 1:
