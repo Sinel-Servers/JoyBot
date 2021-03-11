@@ -132,7 +132,7 @@ class Bump(commands.Cog):
     async def topbumptotal(self, ctx: commands.Context, tnum: int = 10):
         if tnum == 1:
             bump = Bmp(ctx.guild.id)
-            await self.bumptotal(ctx, bump.get_top(1, raw=True))
+            await self.bumptotal(ctx, ctx.guild.get_member(int(bump.get_top(1, raw=True))))
             return
 
         if tnum < 1:
