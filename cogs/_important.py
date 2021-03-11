@@ -119,15 +119,20 @@ class _important(commands.Cog):
     #-------------ON ERROR-----------#
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.errors.CommandError):
+        if isinstance(error, commands.CommandInvokeError):
+            error = getattr(error, "original", error)
+
         if isinstance(error, UnauthorizedUserException):
             await ctx.send("You aren't authorized to use this command!")
             return
 
         if isinstance(error, commands.errors.CommandNotFound):
             return
+
         elif isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send("Please use all required arguments!")
             return
+
         elif "50013" in str(error):
             try:
                 await ctx.send(
