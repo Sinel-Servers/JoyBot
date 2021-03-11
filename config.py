@@ -14,7 +14,7 @@
 # along with this program.
 # If not, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
 
-# You may contact me at admin@sinelservers.xyz
+# You may contact me at joybot@sinelservers.xyz
 
 config = {
     # The things at the top is stuff you will most likely want to change, whereas the
