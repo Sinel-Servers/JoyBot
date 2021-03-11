@@ -120,7 +120,6 @@ class _important(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.errors.CommandError):
         if isinstance(error, commands.CommandInvokeError):
-            print(error)
             error = getattr(error, "original", error)
 
         if isinstance(error, UnauthorizedUserException):
@@ -134,13 +133,15 @@ class _important(commands.Cog):
             await ctx.send("Please use all required arguments!")
             return
 
-        elif "50013" in str(error):
-            print(error)
+        elif isinstance(error, discord.errors.Forbidden):
             try:
                 await ctx.send(
-                    f"Looks like i'm missing a permission, make sure you invited me with the right permissions integer and selected all the parts!\n"
-                    f"If you think you removed some permissions, you can re-invite me by running"
-                    f"the `{await determine_prefix(self.bot, ctx, True)}invite` command.\n(make sure to kick me before you re-invite me!)")
+                    f"Looks like i'm missing a permission, make sure you invited me with the right  "
+                    f"permissions integer and all the tick-boxes were selected!\n"
+                    f"If you think you removed some permissions, you can re-invite me by running the"
+                    f"`{await determine_prefix(self.bot, ctx, True)}invite` command.\n(make sure to kick "
+                    f"me before you re-invite me!)"
+                )
             except discord.errors.Forbidden:
                 pass
             return
