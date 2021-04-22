@@ -170,7 +170,7 @@ class _important(commands.Cog):
         if guild.name is None:
             return
 
-        await self.bot.get_channel(834714477671743519).join_leave_channel.send(f"<:leave:814034631757266954> `{guild.name}`")
+        await self.bot.get_channel(834714477671743519).send(f"<:leave:814034631757266954> `{guild.name}`")
         Bump(guild.id).reset_guild_total()
         Settings(guild.id).reset_settings(False)
         Pictures(guild.id).delete_all()
