@@ -133,6 +133,10 @@ class _important(commands.Cog):
             await ctx.send("Please use all required arguments!")
             return
 
+        elif isinstance(error, commands.errors.BadUnionArgument):
+            await ctx.send("Hi, JoyBot does not support union arguments (Brackets!)")
+            return
+
         elif isinstance(error, discord.errors.Forbidden):
             try:
                 await ctx.send(f"Couldn't run this command, there was a permissions error.")
