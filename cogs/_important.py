@@ -27,7 +27,6 @@ from config import config
 class _important(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.join_leave_channel: discord.TextChannel = bot.get_channel(834714477671743519)
 
     #----------COGS------------#
 
@@ -171,7 +170,7 @@ class _important(commands.Cog):
         if guild.name is None:
             return
 
-        await self.join_leave_channel.send(f"<:leave:814034631757266954> `{guild.name}`")
+        await self.bot.get_channel(834714477671743519).join_leave_channel.send(f"<:leave:814034631757266954> `{guild.name}`")
         Bump(guild.id).reset_guild_total()
         Settings(guild.id).reset_settings(False)
         Pictures(guild.id).delete_all()
@@ -179,7 +178,7 @@ class _important(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        await self.join_leave_channel.send(f"<:join:814034631946928158> `{guild.name}`")
+        await self.bot.get_channel(834714477671743519).send(f"<:join:814034631946928158> `{guild.name}`")
         Settings(guild.id)
         for channel in guild.text_channels:
             try:
