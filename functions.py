@@ -28,16 +28,16 @@ from config import config
 
 # --------------------------------Functions--------------------------------#
 
-def quotify(text: str):
+def quotify(text: str) -> str:
     return "'" + text + "'"
 
 
-async def inch_cm(convert: Union[str, int]):
+async def inch_cm(convert: Union[str, int]) -> Union[str, bool]:
     # CM
     try:
         if convert.isnumeric():
-            inches = int(convert) / 2.54
-            feet = 0
+            inches: int = int(convert / 2.54)
+            feet: int = 0
             while inches >= 13:
                 feet += 1
                 inches -= 12
@@ -49,10 +49,10 @@ async def inch_cm(convert: Union[str, int]):
                 split = convert.split("'")
                 if split[0].isnumeric():
                     if split[1].isnumeric():
-                        inches = int(split[0]) * 12
+                        inches: int = int(split[0]) * 12
                         inches += int(split[1])
-                        cm = inches * 2.54
-                        return str(round(cm)) + "cm"
+                        cm: int = round(inches * 2.54)
+                        return str(cm) + "cm"
                     else:
                         return False
                 else:
@@ -73,7 +73,7 @@ async def inch_cm(convert: Union[str, int]):
 
     # CM again but the provided argument was a number
     except AttributeError:
-        inches = int(convert) / 2.54
+        inches: int = int(convert / 2.54)
         feet = 0
         while inches >= 13:
             feet += 1
@@ -81,17 +81,17 @@ async def inch_cm(convert: Union[str, int]):
         return str(feet) + "'" + str(round(inches))
 
 
-async def string_pop(string: str, topop: int):
-    string = list(string)
+async def string_pop(string: str, topop: int) -> str:
+    string: list[str] = list(string)
     string.pop(topop)
     return "".join(string)
 
 
-async def split_even(string: str):
+async def split_even(string: str) -> tuple[str, str]:
     return string[:len(string) // 2], string[len(string) // 2:]
 
 
-async def text_pretty(text: str, spacegoal: int = config["HELP_NAME_LIMIT"]):
+async def text_pretty(text: str, spacegoal: int = config["HELP_NAME_LIMIT"]) -> str:
     if len(text) > spacegoal - 1:
         return f"OVER {config['SPACEGOAL']}: CONTACT THE DEV"
 
@@ -105,7 +105,8 @@ async def function_backwords(text: str):
 
 
 # Prints a person and their total pictures nicely.
-async def text_pretty_mid_end(starttext: str, endtext: str, mid: str = config["CMD_HELP"]["MID"], spacegoal: int = config["SPACEGOAL"], txtp: int = 20):
+async def text_pretty_mid_end(starttext: str, endtext: str, mid: str = config["CMD_HELP"]["MID"],
+                              spacegoal: int = config["SPACEGOAL"], txtp: int = 20) -> str:
     if len(starttext) > spacegoal - 1:
         return f"OVER {config['SPACEGOAL']}: CONTACT THE DEV"
 
@@ -120,7 +121,7 @@ async def text_pretty_mid_end(starttext: str, endtext: str, mid: str = config["C
     return f"{starttext}{spaces1}{mid}{spaces2}{endtext}"
 
 
-def sort_dict(dictionary: dict, num: int = 10000000000000000, return_type: str = "full"):
+def sort_dict(dictionary: dict, num: int = 10000000000000000, return_type: str = "full") -> list[tuple]:
     topx = {k: v for k, v in sorted(dictionary.items(), key=itemgetter(1), reverse=True)[:num]}
 
     return_list = []
@@ -131,19 +132,18 @@ def sort_dict(dictionary: dict, num: int = 10000000000000000, return_type: str =
         try:
             return return_list[0][0]
         except IndexError:
-            return None
+            return []
 
     elif return_type == "full":
         if num == 1:
-            return return_list[0] if len(return_list) != 0 else {}
+            return return_list[0] if len(return_list) != 0 else []
         return return_list
 
     else:
         raise TypeError
 
 
-# noinspection PyUnusedLocal
-async def determine_prefix(bot, ctx: Union[Context, Message], raw: bool = False):
+async def determine_prefix(bot, ctx: Union[Context, Message], raw: bool = False) -> Union[str, tuple[str, str, str]]:
     settings = Settings(ctx.guild.id)
     if raw:
         return settings.get_setting("prefix")

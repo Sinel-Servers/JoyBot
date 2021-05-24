@@ -19,48 +19,18 @@
 import json
 from ast import literal_eval
 from config import config
-from sqlite3 import OperationalError, IntegrityError
+import pymongo
 import functions
-from classes.database import Database
 from classes.storage import Storage
 from classes.exceptions import AlreadyCountedError, AlreadyBannedError, NoDataError
 
 
-class Bump(Database):
+class Bump:
     """ High-level management of bump database """
     def __init__(self, guild_id: int, user_id: int = None):
-        super().__init__("joybot_main")
         self.guild_id = guild_id
         self.user_id = user_id
         self.bumpDict, self.first_bump_id, self.streak_data = self._loadbumps()
-
-    def _loadbumps(self):
-        """ Update/load all the bump data """
-        if not self._table_exists("bump"):
-            self._make_table("bump", [
-                ("guild_id", "INTEGER PRIMARY KEY"),
-                ("base64", "TEXT"),
-                ("first_bump_id", "INTEGER"),
-                ("streak_base64", "TEXT")
-            ])
-
-        lookup = self._lookup_record("bump", f"guild_id = {self.guild_id}")
-
-        if not lookup:
-            self._add_record("bump", [("guild_id", self.guild_id), ("base64", "'e30='"), ("streak_base64", "'e30='")])
-            lookup = self.guild_id, "e30=", None, "e30="
-        else:
-            lookup = lookup[0]
-
-        # Error correction
-        if lookup[1] is None:
-            lookup = lookup[0], "e30=", lookup[2], lookup[3]
-
-        # Error correction
-        if lookup[3] is None:
-            lookup = lookup[0], lookup[1], lookup[2], "e30="
-
-        return json.loads(Storage(lookup[1]).un_base64()), lookup[2], json.loads(Storage(lookup[3]).un_base64())
 
     def _commit(self):
         """ Commits a change to the database """
@@ -92,7 +62,7 @@ class Bump(Database):
         :return: Integer of the person's position
         """
         toplist = [item for item in self.get_top(num=100000000) if item is not None]
-        
+
         try:
             toplist = [int(listitem[0]) for listitem in toplist]
         except TypeError:
@@ -268,84 +238,7 @@ class Settings(Database):
             self._loadsettings()
 
 
-class Pictures(Database):
-    """ High-level management of pictures databse """
-    def __init__(self, guild_id: int, user_id: int = None):
-        super().__init__("joybot_pics")
-        self.guild_id = guild_id
-        self.guild_pictures = self._loadpics("guild")
-        if user_id is not None:
-            self.user_id = user_id
-            self.user_pictures = self._loadpics("user")
-
-    def _loadpics(self, mode: str = "user"):
-        """ Update/load all the pictures """
-        if not self._table_exists("g_" + str(self.guild_id)):
-            self._make_table("g_" + str(self.guild_id), [("user_id", "INTEGER PRIMARY KEY"), ("base64", "TEXT")])
-
-        if mode == "user":
-            if self.user_id is not None:
-                lookup = self._lookup_record("g_" + str(self.guild_id), f"user_id = {self.user_id}")
-
-                if not lookup:
-                    self._add_record("g_" + str(self.guild_id), [("user_id", self.user_id), ("base64", "'W10='")])
-                    lookup = "W10="
-                else:
-                    lookup = lookup[0][1]
-
-                return literal_eval(Storage(lookup).un_base64())
-
-        elif mode == "guild":
-            lookup = self._lookup_record("g_" + str(self.guild_id))
-            all_user_pictures = {}
-            for user in lookup:
-                all_user_pictures[user[0]] = literal_eval(Storage(user[1]).un_base64())
-
-            return all_user_pictures
-
-    def _commit(self):
-        """ Commit all the pictures to the databse """
-        self._update_record("g_" + str(self.guild_id), [("base64", functions.quotify(Storage(str(self.user_pictures)).do_base64()))], f"user_id = {self.user_id}")
-
-    def add_picture(self, picture_link: str):
-        """ Add a picture to a user
-
-        :param picture_link: The link to the picture
-        """
-        self.user_pictures.append(picture_link)
-        self._commit()
-
-    def remove_picture(self, picture_link: str):
-        """ Remove a picture from a user
-
-        :param picture_link: The link to the picture
-        """
-        try:
-            self.user_pictures.remove(picture_link)
-        except ValueError:
-            raise NoDataError
-
-        self._commit()
-
-    def list(self):
-        """ Get list of pictures for a guild
-
-        :return: How many pictures each user id has
-        """
-        return self.guild_pictures
-
-    def delete_user(self):
-        """ Remove a user's pictures """
-        self.user_pictures = []
-        del self.guild_pictures[str(self.user_id)]
-        self._commit()
-
-    def delete_all(self):
-        """ Remove all pictures in a guild """
-        self._delete_table("g_" + str(self.guild_id))
-
-
-class Counting(Database):
+class Counting:
     """ High-level management of counting databse """
     def __init__(self, guild_id: int):
         super().__init__("joybot_main")
@@ -459,7 +352,7 @@ class Counting(Database):
         return True, cur_data[0]
 
 
-class Ban(Database):
+class Ban:
     """ High-level management of joybot bans databse """
     def __init__(self, guild_id: int):
         super().__init__("joybot_main")
@@ -487,7 +380,7 @@ class Ban(Database):
         self._delete_record("guild_bans", f"guild_id = {self.guild_id}")
 
 
-class Bypass(Database):
+class Bypass:
     """ High-level management of joybot permissions bypass databse """
     def __init__(self, guild_id: int):
         super().__init__("joybot_main")

@@ -200,7 +200,6 @@ class _important(commands.Cog):
         errguild = self.bot.get_guild(config["ERRORDATA"][0])
         if errguild is not None:
             self.bot.errchannel = errguild.get_channel(config["ERRORDATA"][1])
-            self.bot.dmchannel = errguild.get_channel(813405943689379872)
         del errguild
 
 

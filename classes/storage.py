@@ -23,10 +23,10 @@ class Storage:
     def __init__(self, text: str):
         self.text = text
 
-    def do_base64(self):
+    def do_base64(self) -> str:
         self.text = base64.b64encode(bytes(self.text, "utf-8")).decode("utf-8")
         return self.text
 
-    def un_base64(self):
+    def un_base64(self) -> str:
         self.text = base64.b64decode(self.text).decode("utf-8")
         return self.text

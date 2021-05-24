@@ -26,6 +26,9 @@ config = {
     # Environment variable where discord token is
     "TOKENVAR": "DISCORD_JOYBOT_TOKEN",
 
+    # MongoDB URL variable
+    "MONGO_URL_VAR": "MONGODB_URL_JOYBOT",
+
     # Prefix for the bot
     "PREFIX": ".",
 
@@ -182,10 +185,10 @@ config = {
         "OTHERS": None,
 
         # Only people with the Administrator permission and people authorized can use
-        "ADMIN": {
-            "addpic": {"flavor_text": "Adds a picture", "format": "<member>", "long_text": "Adds a picutre to a particular member's pictures list (for use with randompic)", "extra_info": False, "aliases": []},
-            "delpic": {"flavor_text": "Removes a picture", "format": "<member> <picid>", "long_text": "Removes the picture of a particular member", "extra_info": False, "aliases": []}
-        },
+        "ADMIN": {},
+        #    "addpic": {"flavor_text": "Adds a picture", "format": "<member>", "long_text": "Adds a picutre to a particular member's pictures list (for use with randompic)", "extra_info": False, "aliases": []},
+        #    "delpic": {"flavor_text": "Removes a picture", "format": "<member> <picid>", "long_text": "Removes the picture of a particular member", "extra_info": False, "aliases": []}
+        #},
 
         # Only people with the Administrator permission can use
         "ADMINISTATOR": {
