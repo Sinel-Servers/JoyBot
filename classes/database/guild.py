@@ -91,7 +91,8 @@ class Bump(Database):
 
         :return: Integer of the person's position
         """
-        toplist = self.get_top(num=100000000)
+        toplist = [item for item in self.get_top(num=100000000) if item is not None]
+        
         try:
             toplist = [int(listitem[0]) for listitem in toplist]
         except TypeError:
